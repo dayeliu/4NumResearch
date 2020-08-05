@@ -14,7 +14,7 @@ import stock.master.app.service.stockListService;
 @RequestMapping(ConstantKey.API_PREFIX + "/update")
 public class UpdateController {
 
-	@GetMapping("/UpdateStockList")
+	@GetMapping("/updateStockList")
 	public ResponseEntity<String> UpdateStockList()
 	{
 		boolean ret = stockListService.updateList();

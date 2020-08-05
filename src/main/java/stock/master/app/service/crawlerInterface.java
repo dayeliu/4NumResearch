@@ -8,5 +8,11 @@ public interface crawlerInterface {
 	 * @param knowledegId
 	 * 
 	 */
-	void crawlFinanceInfo(String knowledgeId);
+	void crawlFinanceInfo(String sid);
+	
+	void crawlLargeHolderInfo(String sid);
+	
+	void crawlLegalInfo(String sid);
+	
+	void crawlTechInfo(String sid);
 }

@@ -1,5 +1,5 @@
 package stock.master.app.resource;
 
-public class glutInfo {
+public class largeHolderInfo{
 
 }
