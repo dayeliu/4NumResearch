@@ -24,7 +24,9 @@ public class fileOperation {
 			fos = new FileOutputStream(new File(targetDir, zipName));
 			zos = new ZipOutputStream(fos);
 			
+			zos.putNextEntry(new ZipEntry(srcFile.getName()));
 			addFileToZip(srcFile, zos);
+			zos.closeEntry();
 			
 			zos.finish();
 			zos.close();
@@ -57,7 +59,7 @@ public class fileOperation {
 			fos = new FileOutputStream(new File(targetDir, zipName));
 			zos = new ZipOutputStream(fos);
 			
-			addFolderToZip(srcDir, zos);
+			addFolderToZip(srcDir, zos, srcDir);
 			
 			zos.finish();
 			zos.close();
@@ -86,16 +88,12 @@ public class fileOperation {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(srcFile);
-
-			zos.putNextEntry(new ZipEntry(srcFile.getName()));
-
+			
 			int l;
 			while ((l = fis.read(b)) != -1) {
 				zos.write(b, 0, l);
 			}
-
-			zos.closeEntry();
-
+			
 		} catch (IOException e) {
 			//LogService.error("FUNC", "closeFile", 3, "Exception: " + e.toString(), ErrorCode.FILE_OPERATE_IO_ERROR);
 			System.out.println(e.toString());
@@ -112,21 +110,34 @@ public class fileOperation {
 		}
 	}
 	
-	private static void addFolderToZip (File srcDir, ZipOutputStream zos) {
+	private static void addFolderToZip (File srcDir, ZipOutputStream zos, File rootDir) {
 		
-		for (File tmp : srcDir.listFiles()) {
-			if (tmp.isDirectory()) {
-				String name = tmp.getPath().endsWith("/") ? tmp.getPath() : tmp.getPath() + "/";
-				try {
-					zos.putNextEntry(new ZipEntry(name));
-				} catch (IOException e) {
-					System.out.println(e.toString());
-				}
+		try {
+			for (File tmp : srcDir.listFiles()) {
 				
-				addFolderToZip(tmp, zos);
-			} else {
-				addFileToZip(tmp, zos);
+				String name = getRelativePath(rootDir, tmp);
+				if (tmp.isDirectory()) {
+
+					name = name.endsWith("/") ? name : name + "/";
+					zos.putNextEntry(new ZipEntry(name));
+					addFolderToZip(tmp, zos, rootDir);
+				} else {
+					zos.putNextEntry(new ZipEntry(name));
+					addFileToZip(tmp, zos);
+					zos.closeEntry();
+				}
 			}
+		} catch (IOException e) {
+			System.out.println(e.toString());
 		}
+	}
+	
+	private static String getRelativePath(File srcDir, File targetFile) {
+		
+		final int rootLength = srcDir.getAbsolutePath().length();
+		final String absFileName = targetFile.getAbsolutePath();
+		final String relFileName = absFileName.substring(rootLength + 1);
+	    
+	    return relFileName;
 	}
 }

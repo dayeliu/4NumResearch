@@ -20,6 +20,6 @@ public class DownloadController {
 		
 		fileOperation.compressFile(ConstantKey.data_dir + "StockList.txt", ConstantKey.data_dir, "StockList.zip");
 		
-		return new ResponseEntity<>("", HttpStatus.OK); 
+		return new ResponseEntity<>("Done", HttpStatus.OK);
 	}
 }
