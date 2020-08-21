@@ -1,0 +1,4 @@
+[2020-08-10 16:45:01:262] stock.master.app.service.logService.debug(logService.java:11) [ DEBUG ]  Begin
+[2020-08-10 16:45:01:932] stock.master.app.service.logService.debug(logService.java:11) [ DEBUG ]  End
+[2020-08-10 16:46:13:677] stock.master.app.service.logService.debug(logService.java:11) [ DEBUG ]  Begin
+[2020-08-10 16:46:13:816] stock.master.app.service.logService.debug(logService.java:11) [ DEBUG ]  End

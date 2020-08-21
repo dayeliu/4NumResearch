@@ -1,0 +1,6 @@
+[2020-08-21 17:04:02:107] [ DEBUG ] ( compressFile:20 ) +++++
+[2020-08-21 17:04:43:950] [ ERROR ] ( compressFile:24 ) File not exist. name : data//text.txt
+[2020-08-21 17:05:19:294] [ DEBUG ] ( compressFile:20 ) +++++
+[2020-08-21 17:05:21:943] [ DEBUG ] ( addFileToZip:96 ) Begin
+[2020-08-21 17:05:24:510] [ DEBUG ] ( addFileToZip:123 ) End
+[2020-08-21 17:05:25:359] [ DEBUG ] ( compressFile:54 ) -----
