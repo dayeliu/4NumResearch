@@ -177,6 +177,10 @@ public class fileOperation {
 
 	private static void deleteImpl (String source) throws Exception {
 		Path delPath = Paths.get(source);
+		if (!Files.exists(delPath)) {
+			logService.error("source not exist : " + source);
+			return;
+		}
 
 		Files.walk(delPath).sorted(Comparator.reverseOrder()).forEach(path -> {
 			try {
@@ -209,6 +213,10 @@ public class fileOperation {
 	private static void copyImpl (String oldPath, String newPath) throws Exception {
 		Path sourceDir = Paths.get(oldPath);
         Path destinationDir = Paths.get(newPath);
+        if (!Files.exists(sourceDir)) {
+            logService.error("source not exist : " + oldPath);
+            return;
+        }
 
         // Traverse the file tree and copy each file/directory.
         Files.walk(sourceDir).forEach(sourcePath -> {
