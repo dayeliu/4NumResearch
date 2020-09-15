@@ -2,6 +2,7 @@ package stock.master.app.service;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -12,12 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
-import stock.master.app.constant.ConstantKey;
-import stock.master.app.resource.basicInfo;
+import org.springframework.stereotype.Service;
 
-public class stockListService {
+import au.com.bytecode.opencsv.CSVReader;
+import stock.master.app.constant.ConstantKey;
+import stock.master.app.entity.BasicInfo;
+
+@Service
+public class stockListService extends repositoryService {
 	
 	/*
 	 * source url : https://mops.twse.com.tw/mops/web/t51sb01
@@ -27,114 +30,77 @@ public class stockListService {
 	 * output : StockList.csv
 	 * 
 	 * */
-	public static boolean updateList() {
-		
-		Map<String, basicInfo> stockList = new HashMap<String, basicInfo>();
-		
-		getCompanyList(ConstantKey.otc_list, stockList);
-		getCompanyList(ConstantKey.tse_list, stockList);
-		
-		getClassification(ConstantKey.daniel_fine, stockList);
-		getClassification(ConstantKey.daniel_rough, stockList);
-		getClassification(ConstantKey.otc_rough, stockList);
-		getClassification(ConstantKey.tse_rough, stockList);
-		getClassification(ConstantKey.fine_industry, stockList);
-		getClassification(ConstantKey.detail_industry, stockList);
-		
-		exportStockListFile(stockList);
-		
-		return true;
-	}
-	
-	public static String show(String sid) {
-		
-		Map<String, basicInfo> lists = new HashMap<String, basicInfo>();
-		importStockListFile(lists);
-		
-		String str = lists.get(sid).toString();
-		
-		System.out.println(str);
-		return str;
-	}
-	
-	private static boolean exportStockListFile(Map<String, basicInfo> lists) {
-		
-		CSVWriter writer = null;
+	public int updateList() throws Exception {
+		int count = 0;
 		try {
-			writer = new CSVWriter(new FileWriter(ConstantKey.stock_list), ','); 
+			count += getCompanyList(ConstantKey.otc_list);
+			count += getCompanyList(ConstantKey.tse_list);
 			
-			for (basicInfo info : lists.values()) {
-				
-				String [] line = { info.getSid(), info.getName(), info.getProperty(), info.getClassification(), info.getAmount().toString()};
-				writer.writeNext(line);
-			}
+			getClassification(ConstantKey.daniel_fine);
+			getClassification(ConstantKey.daniel_rough);
+			getClassification(ConstantKey.otc_rough);
+			getClassification(ConstantKey.tse_rough);
+			getClassification(ConstantKey.fine_industry);
+			getClassification(ConstantKey.detail_industry);
 			
-		} catch (IOException e) {
-			System.out.println(e);
-		} finally {
-			try {
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (IOException e) {
-				System.out.println(e);
-			}
+			exportStockListFile(ConstantKey.stock_list);
+
+		} catch (Exception e) {
+			throw new Exception(logService.error(e.toString()));
 		}
-		
-		return true;
+
+		return count;
 	}
 	
-	private static boolean hasImportStockListFile = false;
-	private static boolean importStockListFile(Map<String, basicInfo> lists) {
+	public String show(String sid) {
+		BasicInfo info = basicInfoRepository.findByStockId(sid);
+		if (info == null) {
+			logService.error("stock not exist in db " + sid);
+			return "";
+		}
+
+		return showFormat(info);
+	}
+	
+	private String showFormat(BasicInfo info) {
+		if (info == null) {
+			return "";
+		}
+
+		// EX : 2330 (台積電, 111/25930380) : 半導體*, 半導體指標, TSE-電子, TSE-半導體, APPLE, AMD
+		String ret = "[" + info.getStockClass() + "] " + info.getStockId() + 
+    			" (" + info.getName() + ", " + (int)(info.getAmount()*0.0015) + "/" + info.getAmount() + ") : " + info.getCategory();
+
+		return ret;
+	}
+
+	private boolean exportStockListFile(String path) throws Exception {
 		
-		
-		CSVReader reader = null; 
-		DataInputStream in = null;
-		
-		String property = "";
-		
+		File file = new File(path);
+		FileWriter fr = null;
 		try {
-			String [] nextLine; 
-			
-			in = new DataInputStream(new FileInputStream(ConstantKey.stock_list));
-			reader = new CSVReader(new InputStreamReader(in, "UTF-8"));
-			while ((nextLine = reader.readNext()) != null) {
-				basicInfo info = new basicInfo();
-				info.setSid(nextLine[0]);
-				info.setName(nextLine[1]);
-				info.setClassification(nextLine[3]);
-				info.setAmount((Long.valueOf(nextLine[4])));
-				info.setProperty(nextLine[2]);
-				
-				lists.put(nextLine[0], info);
-			}
-			
-		} catch (IOException e) {
-			System.out.println(e);
-		} finally {
-			try {
-				if (reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				System.out.println(e);
-			}
-			
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
-				System.out.println(e);
-			}
-		}
-		
-		hasImportStockListFile = true;
+            fr = new FileWriter(file);
+            
+            List<BasicInfo> basicInfoList = basicInfoRepository.findAll();
+            for (BasicInfo info : basicInfoList) {
+            	String data = showFormat(info);
+            	fr.write(data + "\n");
+            }
+
+        } catch (IOException e) {
+        	throw new Exception(logService.error(e.toString()));
+        }finally{
+            try {
+                fr.close();
+            } catch (IOException e) {
+            	logService.error(e.toString());
+            }
+        }
+
 		return true;
 	}
-	
-	private static boolean getClassification(String classificationList, Map<String, basicInfo> lists) {
-		
+
+	private boolean getClassification(String classificationList) throws Exception {
 		BufferedReader reader = null;
 		
 		try {
@@ -156,36 +122,33 @@ public class stockListService {
 					String[] sids = line.split(",");
 					
 					for (String sid : sids) {
-						if (lists.containsKey(sid) == false) {
-							System.out.println("File : " + classificationList + " Stock id : " + sid + " not exist in StockList.csv");
+						BasicInfo info = basicInfoRepository.findByStockId(sid);
+						if (info == null) {
+							logService.error("stock not exist in db " + sid);
 							continue;
 						}
-						
-						basicInfo info = lists.get(sid);
-						String classification = info.getClassification();
-						classification += "," + name;
-						info.setClassification(classification);
-						lists.put(sid, info);
+
+						String category = info.getCategory();
+						category += "," + name;
+						info.setCategory(category);
+						basicInfoRepository.save(info);
 					}
 				}
 			}
 		} catch (IOException e) {
-			System.out.println(e);
+			throw new Exception(logService.error(e.toString()));
 		} finally {
 			try {
-				if (reader != null) {
-					reader.close();
-				}
+				reader.close();
 			} catch (IOException e) {
-				System.out.println(e);
+				logService.error(e.toString());
 			}
 		}
 		
 		return true;
 	}
-	
-	private static boolean getCompanyList(String company, Map<String, basicInfo> lists) {
-		
+
+	private int getCompanyList(String company) throws Exception{
 		CSVReader reader = null; 
 		DataInputStream in = null;
 		
@@ -196,9 +159,9 @@ public class stockListService {
 			property = "otc";
 		}
 		
+		int idx = -1;
 		try {
 			String [] nextLine; 
-			int idx = -1;
 			
 			in = new DataInputStream(new FileInputStream(company));
 			reader = new CSVReader(new InputStreamReader(in, "UTF-8"));
@@ -208,36 +171,32 @@ public class stockListService {
 					continue;
 				}
 				
-				basicInfo info = new basicInfo();
-				info.setSid(nextLine[0]);
+				BasicInfo info = new BasicInfo();
+				info.setStockId(nextLine[0]);
 				info.setName(nextLine[2]);
-				info.setClassification(nextLine[3]);
-				info.setAmount((Long.valueOf(nextLine[17])/1000));
-				info.setProperty(property);
-				
-				lists.put(nextLine[0], info);
+				info.setCategory(nextLine[3]);
+				info.setAmount(Long.valueOf(nextLine[17])/1000);
+				info.setStockClass(property);
+
+				basicInfoRepository.save(info);
 			}
 			
 		} catch (IOException e) {
-			System.out.println(e);
+			throw new Exception(logService.error(e.toString()));
 		} finally {
 			try {
-				if (reader != null) {
-					reader.close();
-				}
+				reader.close();
 			} catch (IOException e) {
-				System.out.println(e);
+				logService.error(e.toString());
 			}
 			
 			try {
-				if (in != null) {
-					in.close();
-				}
+				in.close();
 			} catch (IOException e) {
-				System.out.println(e);
+				logService.error(e.toString());
 			}
 		}
-		
-		return true;
-	} 
+
+		return idx;
+	}
 }

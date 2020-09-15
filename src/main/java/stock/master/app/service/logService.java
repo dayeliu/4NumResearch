@@ -13,7 +13,7 @@ public class logService {
 		String msg = "( " + callerName + ":" + callerLine.toString() +" ) " + message;
 
 		logger.debug(msg);
-		return msg;
+		return message;
 	}
 	
 	public static String error(String message) {
@@ -23,6 +23,6 @@ public class logService {
 		String msg = "( " + callerName + ":" + callerLine.toString() +" ) " + message;
 
 		logger.error(msg);
-		return msg;
+		return message;
 	}
 }

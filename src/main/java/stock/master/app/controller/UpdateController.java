@@ -1,5 +1,6 @@
 package stock.master.app.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,19 +15,20 @@ import stock.master.app.service.stockListService;
 @RequestMapping(ConstantKey.API_PREFIX + "/update")
 public class UpdateController {
 
+	@Autowired
+	stockListService service;
+
 	@GetMapping("/updateStockList")
-	public ResponseEntity<String> UpdateStockList()
+	public ResponseEntity<String> UpdateStockList() throws Exception
 	{
-		boolean ret = stockListService.updateList();
-		
-		String result = "";
-		if (ret == true) {
-			result = "Success";
-		} else {
-			result = "Fail";
+		Integer count = 0; 
+		try {
+			count = service.updateList();
+		} catch (Exception e) {
+			throw new Exception (e.toString());
 		}
-			
-		return new ResponseEntity<>(result, HttpStatus.OK);
+
+		return new ResponseEntity<>("Total count : " + count.toString(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/InitDb")
