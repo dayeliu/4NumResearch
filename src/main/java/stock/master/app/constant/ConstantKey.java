@@ -17,7 +17,10 @@ public class ConstantKey {
 	public static final String detail_industry = conf_dir + "DETAIL_INDUSTRY.txt";
 	public static final String stock_list = conf_dir + "StockList.csv";
 
+	// common
+	public static final int retryTime = 3;
 	
-	// 
+	
+	// system setting
 	public static final String API_PREFIX = "/stock/v1";
 }

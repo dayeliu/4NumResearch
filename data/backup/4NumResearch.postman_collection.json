@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "a54e9899-2156-4ab6-a73c-29c00caea3ed",
+		"name": "4NumResearch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "updateStockList",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/update/updateStockList",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"update",
+						"updateStockList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "InitialDb",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/update/InitDb",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"update",
+						"InitDb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CralwerTesting",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "downloadDatabase",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/download/getDatabase",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"download",
+						"getDatabase"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "developFunction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/develop/function",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"develop",
+						"function"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

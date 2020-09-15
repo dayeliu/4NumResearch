@@ -6,6 +6,7 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,16 +24,25 @@ public class DevelopControler {
 	public ResponseEntity<String> function() throws IOException {
 		
 		
-		Connection connect = Jsoup.connect("https://norway.twsthr.info/StockHolders.aspx?stock=2448");
+		Connection connect = Jsoup.connect("https://stock.wearn.com/asale.asp?kind=2330");
 		
 		Document doc = connect.timeout(5000).get();
 		
-		Element element = doc.select("div[id=D1]").get(0);
-		Element t0 = element.select("tr[class=lDS]").get(0);
-		Element t1 = element.select("tr[class=lDS]").get(1);
+		int count1 = doc.select("tr[class=stockalllistbg2]").size();
+		int count2 = doc.select("tr[class=stockalllistbg2]").size();
 		
-		System.out.println(t0);
-		System.out.println(t1);
+		Elements elements = doc.select("tr[class=stockalllistbg2]").get(0).select("td");
+		for (Element ele : elements) {
+			System.out.println(ele.text());
+		}
+
+		
+		//Element element = doc.select("div[id=D1]").get(0);
+		//Element t0 = element.select("tr[class=lDS]").get(0);
+		//Element t1 = element.select("tr[class=lDS]").get(1);
+		
+		//System.out.println(t0);
+		//System.out.println(t1);
 		
 		
 		

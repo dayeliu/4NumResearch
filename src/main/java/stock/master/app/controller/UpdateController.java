@@ -1,6 +1,5 @@
 package stock.master.app.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,14 +8,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
-import stock.master.app.service.stockListService;
 
 @RestController
 @RequestMapping(ConstantKey.API_PREFIX + "/update")
-public class UpdateController {
-
-	@Autowired
-	stockListService service;
+public class UpdateController extends BaseController {
 
 	@GetMapping("/updateStockList")
 	public ResponseEntity<String> UpdateStockList() throws Exception
@@ -33,6 +28,12 @@ public class UpdateController {
 	
 	@GetMapping("/InitDb")
 	public ResponseEntity<String> InitialDb() {
+		try {
+			crawlwerService.updateRevenue("2330");
+		} catch (Exception e) {
+			
+		}
+		
 		return new ResponseEntity<>("", HttpStatus.OK); 
 	}
 	
