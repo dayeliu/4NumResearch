@@ -1,5 +1,7 @@
 package stock.master.app.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,14 +10,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
+import stock.master.app.entity.BasicInfo;
+import stock.master.app.service.logService;
 
 @RestController
 @RequestMapping(ConstantKey.API_PREFIX + "/update")
 public class UpdateController extends BaseController {
 
 	@GetMapping("/updateStockList")
-	public ResponseEntity<String> UpdateStockList() throws Exception
-	{
+	public ResponseEntity<String> UpdateStockList() throws Exception {
+		logService.debug("===== UpdateStockList begin =====");
+
 		Integer count = 0; 
 		try {
 			count = service.updateList();
@@ -23,16 +28,33 @@ public class UpdateController extends BaseController {
 			throw new Exception (e.toString());
 		}
 
-		return new ResponseEntity<>("Total count : " + count.toString(), HttpStatus.OK);
+		String msg = "Total count : " + count.toString();
+		logService.debug(msg);
+
+		logService.debug("===== UpdateStockList end =====");
+		return new ResponseEntity<>(msg, HttpStatus.OK);
 	}
 	
 	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb() {
+	public ResponseEntity<String> InitialDb() throws Exception {
+		logService.debug("===== InitialDb begin =====");
+
 		try {
-			crawlwerService.updateRevenue("2330");
+			List<BasicInfo> basicInfoList = service.getAllStockInfo();
+			int idx = 0;
+			for (BasicInfo info : basicInfoList) {
+				logService.debug("[Index : " + idx + "]");
+
+				crawlwerService.updateRevenue(info.getStockId());
+				idx++;
+			}
+					
+
 		} catch (Exception e) {
-			
+			throw new Exception(e.toString());
 		}
+
+		logService.debug("===== InitialDb end =====");
 		
 		return new ResponseEntity<>("", HttpStatus.OK); 
 	}

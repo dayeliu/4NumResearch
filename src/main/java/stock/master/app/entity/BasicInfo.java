@@ -1,6 +1,7 @@
 package stock.master.app.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.*;
 
@@ -25,6 +26,12 @@ public class BasicInfo implements Serializable {
 
 	@Column(name = "amount", nullable = false)
 	private Long amount;
+	
+	@Column(name = "last_modified", nullable = false)
+	private Date lastModified;
+	
+	@Column(name = "initial", nullable = false)
+	private boolean initial;
 
 	public BasicInfo() {
 		this.stockId = "";
@@ -32,14 +39,20 @@ public class BasicInfo implements Serializable {
 		this.stockClass = "";
 		this.category = "";
 		this.amount = 0L;
+		this.lastModified = new Date();
+		this.initial = false;
 	}
 
-	public BasicInfo(String stockId, String name, String stockClass, String category, Long amount) {
+	public BasicInfo(String stockId, String name, String stockClass, String category, Long amount, Date lastModified,
+			boolean initial) {
+		super();
 		this.stockId = stockId;
 		this.name = name;
 		this.stockClass = stockClass;
 		this.category = category;
 		this.amount = amount;
+		this.lastModified = lastModified;
+		this.initial = initial;
 	}
 	
 	public String getStockId() {
@@ -80,5 +93,21 @@ public class BasicInfo implements Serializable {
 
 	public void setAmount(Long amount) {
 		this.amount = amount;
+	}
+	
+	public Date getLastModified() {
+		return lastModified;
+	}
+
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	public boolean isInitial() {
+		return initial;
+	}
+
+	public void setInitial(boolean initial) {
+		this.initial = initial;
 	}
 }

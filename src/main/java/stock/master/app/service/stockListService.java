@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import au.com.bytecode.opencsv.CSVReader;
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
 
@@ -31,17 +30,22 @@ public class stockListService extends repositoryService {
 	 * 
 	 * */
 	public int updateList() throws Exception {
-		int count = 0;
+
+		Map<String, BasicInfo> list = new HashMap<String, BasicInfo>();
+
 		try {
-			count += getCompanyList(ConstantKey.otc_list);
-			count += getCompanyList(ConstantKey.tse_list);
+					
+			getCompanyList1(ConstantKey.otc_list, list);
+			getCompanyList1(ConstantKey.tse_list, list);
 			
-			getClassification(ConstantKey.daniel_fine);
-			getClassification(ConstantKey.daniel_rough);
-			getClassification(ConstantKey.otc_rough);
-			getClassification(ConstantKey.tse_rough);
-			getClassification(ConstantKey.fine_industry);
-			getClassification(ConstantKey.detail_industry);
+			getClassification(ConstantKey.daniel_fine, list);
+			getClassification(ConstantKey.daniel_rough, list);
+			getClassification(ConstantKey.otc_rough, list);
+			getClassification(ConstantKey.tse_rough, list);
+			getClassification(ConstantKey.fine_industry, list);
+			getClassification(ConstantKey.detail_industry, list);
+
+			basicInfoRepository.saveAll(list.values());
 			
 			exportStockListFile(ConstantKey.stock_list);
 
@@ -49,9 +53,13 @@ public class stockListService extends repositoryService {
 			throw new Exception(logService.error(e.toString()));
 		}
 
-		return count;
+		return list.size();
 	}
 	
+	public List<BasicInfo> getAllStockInfo() {
+		return basicInfoRepository.findAll();
+	}
+
 	public String show(String sid) {
 		BasicInfo info = basicInfoRepository.findByStockId(sid);
 		if (info == null) {
@@ -100,7 +108,7 @@ public class stockListService extends repositoryService {
 		return true;
 	}
 
-	private boolean getClassification(String classificationList) throws Exception {
+	private boolean getClassification(String classificationList, Map<String, BasicInfo> list) throws Exception {
 		BufferedReader reader = null;
 		
 		try {
@@ -122,16 +130,18 @@ public class stockListService extends repositoryService {
 					String[] sids = line.split(",");
 					
 					for (String sid : sids) {
-						BasicInfo info = basicInfoRepository.findByStockId(sid);
-						if (info == null) {
+						
+						if (!list.containsKey(sid)) {
 							logService.error("stock not exist in db " + sid);
 							continue;
 						}
 
+						BasicInfo info = list.get(sid);
 						String category = info.getCategory();
 						category += "," + name;
 						info.setCategory(category);
-						basicInfoRepository.save(info);
+						
+						list.put(sid, info);
 					}
 				}
 			}
@@ -147,40 +157,69 @@ public class stockListService extends repositoryService {
 		
 		return true;
 	}
+	
+	private void getCompanyList1(String company, Map<String, BasicInfo> list) throws Exception{
 
-	private int getCompanyList(String company) throws Exception{
-		CSVReader reader = null; 
-		DataInputStream in = null;
-		
 		String property = "";
 		if (company.contains("tse")) {
 			property = "tse";
 		} else if (company.contains("otc")) {
 			property = "otc";
 		}
-		
-		int idx = -1;
+
+		int row_idx = -1;
+		BufferedReader reader = null;
 		try {
-			String [] nextLine; 
-			
-			in = new DataInputStream(new FileInputStream(company));
-			reader = new CSVReader(new InputStreamReader(in, "UTF-8"));
-			while ((nextLine = reader.readNext()) != null) {
-				idx++;
-				if (idx == 0) {
+			reader = new BufferedReader(new FileReader(company));
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				row_idx++;
+				if (row_idx == 0) {
 					continue;
 				}
 				
-				BasicInfo info = new BasicInfo();
-				info.setStockId(nextLine[0]);
-				info.setName(nextLine[2]);
-				info.setCategory(nextLine[3]);
-				info.setAmount(Long.valueOf(nextLine[17])/1000);
-				info.setStockClass(property);
+				line = line.replace("\n", "");
+				line = line.replace("\r", "");
+				line = line.replace("\t", "");
+				line = line.replace(" ", "");
 
-				basicInfoRepository.save(info);
+				BasicInfo info = new BasicInfo();
+
+				boolean bInDuration = false;
+				String item = "";
+				int items_idx = 0;
+				
+				char[] array = line.toCharArray();
+				for (int i = 0; i < array.length; i++) {
+					
+					if (array[i] == '\"') {
+						bInDuration = !bInDuration;
+						continue;
+					}
+
+					if ((array[i] == ',') && bInDuration == false) {
+						if (items_idx == 0) {
+							info.setStockId(item);
+						} else if (items_idx == 2) {
+							info.setName(item);
+						} else if (items_idx == 3) {
+							info.setCategory(item);
+						} else if (items_idx == 17) {
+							info.setAmount(Long.valueOf(item)/1000);
+						}
+
+						//System.out.println("item : " + item + ", items_idx : " + items_idx);
+						item = "";
+						items_idx++;
+						continue;
+					}
+
+					item += array[i];
+		        }
+
+				info.setStockClass(property);
+				list.put(info.getStockId(), info);
 			}
-			
 		} catch (IOException e) {
 			throw new Exception(logService.error(e.toString()));
 		} finally {
@@ -189,14 +228,6 @@ public class stockListService extends repositoryService {
 			} catch (IOException e) {
 				logService.error(e.toString());
 			}
-			
-			try {
-				in.close();
-			} catch (IOException e) {
-				logService.error(e.toString());
-			}
 		}
-
-		return idx;
 	}
 }
