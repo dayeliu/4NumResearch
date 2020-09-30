@@ -13,7 +13,7 @@ public class StrategyController extends BaseController {
 
 		Integer count = 0; 
 		try {
-			count = service.updateList();
+			count = stockList_service.updateList();
 		} catch (Exception e) {
 			throw new Exception (e.toString());
 		}

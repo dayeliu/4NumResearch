@@ -9,6 +9,8 @@ import stock.master.app.entity.BasicInfo;
 
 public interface BasicInfoRepository extends JpaRepository<BasicInfo, String>, JpaSpecificationExecutor<BasicInfo> {
 	BasicInfo findByStockId(String stockId);
-	
+
 	List<BasicInfo> findAll();
+
+	List<BasicInfo> findAllByOrderByStockIdAsc();
 }

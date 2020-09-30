@@ -3,6 +3,7 @@ package stock.master.app.controller;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Connection;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.entity.Revenue;
 import stock.master.app.repository.BasicInfoRepository;
+import stock.master.app.repository.RevenueRepository;
 import stock.master.app.service.logService;
 
 @RestController
@@ -27,6 +30,9 @@ import stock.master.app.service.logService;
 public class DevelopControler extends BaseController {
 	@Autowired
 	protected BasicInfoRepository basicInfoRepository;
+	
+	@Autowired
+	protected RevenueRepository revenueRepository;
 	
 	@GetMapping("/function")
 	public ResponseEntity<String> function() throws IOException {
@@ -60,30 +66,14 @@ public class DevelopControler extends BaseController {
 	@GetMapping("/function1")
 	public ResponseEntity<String> function1() throws Exception {
 		
-		File file = new File("over_12_month");
-		FileWriter fr = null;
-		try {
-            fr = new FileWriter(file);
-            
-            List<BasicInfo> basicInfoList = service.getAllStockInfo();
-
-    		for (BasicInfo info : basicInfoList) {
-    			String sid = info.getStockId();
-    			if (strategyservice.strategy_incomeOver12Month(sid) == true) {
-    				String data = service.show(sid);
-                	fr.write(data + "\n");
-				}
-    		}
-        } catch (Exception e) {
-        	throw new Exception(logService.error(e.toString()));
-        }finally{
-            try {
-                fr.close();
-            } catch (IOException e) {
-            	logService.error(e.toString());
-            }
-        }
+		List<String> stockIds = new ArrayList<String>();
+		stockIds.add("2330");
+		stockIds.add("3017");
 		
+		List<Revenue> list = revenueRepository.findByStockIdIn(stockIds);
+		System.out.println(list.size());
+		
+				
 		
 		
 		return new ResponseEntity<>("function1 Done", HttpStatus.OK);

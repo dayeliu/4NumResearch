@@ -19,6 +19,17 @@ public class wearnCrawlerService extends repositoryService {
 	private final String basic_url = "https://stock.wearn.com/";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyy-MM-dd");
 	
+	public void InitDb() {
+		
+	}
+	
+	public void UpdateDb() {
+		
+	}
+	
+	/*
+	 * 營收
+	 * */
 	public void updateRevenue(String sid) throws Exception {
 		logService.debug("===== updateRevenue begin ===== [" + sid + "]");
 		

@@ -9,4 +9,6 @@ import stock.master.app.entity.Revenue;
 
 public interface RevenueRepository extends JpaRepository<Revenue, Long>, JpaSpecificationExecutor<Revenue>{
 	List<Revenue> findByStockIdOrderByDateDesc(String stockId);
+	
+	List<Revenue> findByStockIdIn(List<String> stockIds);
 }

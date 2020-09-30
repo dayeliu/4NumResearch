@@ -35,8 +35,8 @@ public class stockListService extends repositoryService {
 
 		try {
 					
-			getCompanyList1(ConstantKey.otc_list, list);
-			getCompanyList1(ConstantKey.tse_list, list);
+			getCompanyList(ConstantKey.otc_list, list);
+			getCompanyList(ConstantKey.tse_list, list);
 			
 			getClassification(ConstantKey.daniel_fine, list);
 			getClassification(ConstantKey.daniel_rough, list);
@@ -57,7 +57,7 @@ public class stockListService extends repositoryService {
 	}
 	
 	public List<BasicInfo> getAllStockInfo() {
-		return basicInfoRepository.findAll();
+		return basicInfoRepository.findAllByOrderByStockIdAsc();
 	}
 
 	public String show(String sid) {
@@ -89,7 +89,7 @@ public class stockListService extends repositoryService {
 		try {
             fr = new FileWriter(file);
             
-            List<BasicInfo> basicInfoList = basicInfoRepository.findAll();
+            List<BasicInfo> basicInfoList = basicInfoRepository.findAllByOrderByStockIdAsc();
             for (BasicInfo info : basicInfoList) {
             	String data = showFormat(info);
             	fr.write(data + "\n");
@@ -158,7 +158,7 @@ public class stockListService extends repositoryService {
 		return true;
 	}
 	
-	private void getCompanyList1(String company, Map<String, BasicInfo> list) throws Exception{
+	private void getCompanyList(String company, Map<String, BasicInfo> list) throws Exception{
 
 		String property = "";
 		if (company.contains("tse")) {
@@ -198,6 +198,8 @@ public class stockListService extends repositoryService {
 					}
 
 					if ((array[i] == ',') && bInDuration == false) {
+						//System.out.println("item : " + item + ", items_idx : " + items_idx);
+
 						if (items_idx == 0) {
 							info.setStockId(item);
 						} else if (items_idx == 2) {
@@ -208,7 +210,6 @@ public class stockListService extends repositoryService {
 							info.setAmount(Long.valueOf(item)/1000);
 						}
 
-						//System.out.println("item : " + item + ", items_idx : " + items_idx);
 						item = "";
 						items_idx++;
 						continue;

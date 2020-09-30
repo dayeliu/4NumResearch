@@ -1,5 +1,6 @@
 package stock.master.app.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.entity.Revenue;
 import stock.master.app.service.logService;
 
 @RestController
@@ -21,14 +23,14 @@ public class UpdateController extends BaseController {
 	public ResponseEntity<String> UpdateStockList() throws Exception {
 		logService.debug("===== UpdateStockList begin =====");
 
-		Integer count = 0; 
+		int count = 0; 
 		try {
-			count = service.updateList();
+			count = stockList_service.updateList();
 		} catch (Exception e) {
-			throw new Exception (e.toString());
+			throw new Exception (logService.error(e.toString()));
 		}
 
-		String msg = "Total count : " + count.toString();
+		String msg = "Total count : " + count;
 		logService.debug(msg);
 
 		logService.debug("===== UpdateStockList end =====");
@@ -40,18 +42,24 @@ public class UpdateController extends BaseController {
 		logService.debug("===== InitialDb begin =====");
 
 		try {
-			List<BasicInfo> basicInfoList = service.getAllStockInfo();
+			List<String> stockIds = new ArrayList<String>();
+			stockIds.add("2330");
+			stockIds.add("3017");
+			
+			//List<Revenue> list = findByStockIdIn(stockIds);
+			
+			/*List<BasicInfo> basicInfoList = stockList_service.getAllStockInfo();
 			int idx = 0;
 			for (BasicInfo info : basicInfoList) {
 				logService.debug("[Index : " + idx + "]");
 
-				crawlwerService.updateRevenue(info.getStockId());
+				crawl_Service.updateRevenue(info.getStockId());
 				idx++;
 			}
-					
+			*/	
 
 		} catch (Exception e) {
-			throw new Exception(e.toString());
+			throw new Exception(logService.error(e.toString()));
 		}
 
 		logService.debug("===== InitialDb end =====");

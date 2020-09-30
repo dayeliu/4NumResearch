@@ -8,11 +8,11 @@ import stock.master.app.service.wearnCrawlerService;
 
 public class BaseController {
 	@Autowired
-	stockListService service;
+	stockListService stockList_service;
 	
 	@Autowired
-	wearnCrawlerService crawlwerService;
+	wearnCrawlerService crawl_Service;
 	
 	@Autowired
-	strategyService strategyservice;
+	strategyService strategy_service;
 }

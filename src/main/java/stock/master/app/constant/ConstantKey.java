@@ -6,7 +6,7 @@ public class ConstantKey {
 	public static final String conf_dir = data_dir + "config//";
 	public static final String template_dir = conf_dir + "template//";
 	public static final String industry_dir = conf_dir + "industry//";
-	
+
 	// stock list
 	public static final String otc_list = template_dir + "otc_list.csv";
 	public static final String tse_list = template_dir + "tse_list.csv";
@@ -20,8 +20,8 @@ public class ConstantKey {
 
 	// common
 	public static final int retryTime = 3;
-	
-	
+	public static final int number2Db = 1000;
+
 	// system setting
 	public static final String API_PREFIX = "/stock/v1";
 }
