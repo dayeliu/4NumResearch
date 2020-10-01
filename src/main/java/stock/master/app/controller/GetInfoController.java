@@ -16,8 +16,8 @@ import stock.master.app.entity.Revenue;
 import stock.master.app.util.Log;
 
 @RestController
-@RequestMapping(ConstantKey.API_PREFIX + "/update")
-public class UpdateController extends BaseController {
+@RequestMapping(ConstantKey.API_PREFIX + "/getinfo")
+public class GetInfoController extends BaseController {
 
 	@GetMapping("/updateStockList")
 	public ResponseEntity<String> UpdateStockList() throws Exception {

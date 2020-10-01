@@ -12,16 +12,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
-import stock.master.app.service.logService;
-
 public class fileOperation {
 
 	public static void compressFile(String sourceFile, String targetDir, String zipName) throws Exception {
-		logService.debug("+++++");
+		Log.debug("+++++");
 
 		File srcFile = new File(sourceFile);
 		if (!srcFile.exists()) {
-			logService.error("File not exist. name : " + sourceFile);
+			Log.error("File not exist. name : " + sourceFile);
 			return;
 		}
 		
@@ -40,27 +38,27 @@ public class fileOperation {
 			zos.close();
 			fos.flush();
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		} finally {
 			try {
 				if (fos != null) {
 					fos.close();
 				}
 			} catch (Exception e) {
-				logService.error("Exception: " + e.toString());
+				Log.error("Exception: " + e.toString());
 			}
 		}
 		
-		logService.debug("-----");
+		Log.debug("-----");
 		return;
 	}
 
 	public static void compressDirectory(String sourceDir, String targetDir, String zipName) throws Exception {
-		logService.debug("+++++");
+		Log.debug("+++++");
 		
 		File srcDir = new File(sourceDir);
 		if (!srcDir.exists()) {
-			logService.error("Directory not exist. name : " + sourceDir);
+			Log.error("Directory not exist. name : " + sourceDir);
 			return;
 		}
 		
@@ -77,23 +75,23 @@ public class fileOperation {
 			zos.close();
 			fos.flush();
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		} finally {
 			try {
 				if (fos != null) {
 					fos.close();
 				}
 			} catch (Exception e) {
-				logService.error("Exception: " + e.toString());
+				Log.error("Exception: " + e.toString());
 			}
 		}
 
-		logService.debug("End");
+		Log.debug("End");
 		return ;
 	}
 
 	private static void addFileToZip(File srcFile, ZipOutputStream zos) throws Exception{
-		logService.debug("Begin");
+		Log.debug("Begin");
 
 		byte[] b = new byte[(int) srcFile.length()];
 
@@ -107,24 +105,24 @@ public class fileOperation {
 			}
 			
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		} finally {
 			try {
 				if (fis != null) {
 					fis.close();
 				}
 			} catch (Exception e) {
-				logService.error("Exception: " + e.toString());
+				Log.error("Exception: " + e.toString());
 			}
 			
 			b = null;
 		}
 
-		logService.debug("End");
+		Log.debug("End");
 	}
 
 	private static void addFolderToZip (File srcDir, ZipOutputStream zos, File rootDir) throws Exception {
-		logService.debug("Begin");
+		Log.debug("Begin");
 
 		try {
 			for (File tmp : srcDir.listFiles()) {
@@ -142,10 +140,10 @@ public class fileOperation {
 				}
 			}
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 
-		logService.debug("End");
+		Log.debug("End");
 	}
 
 	private static String getRelativePath(File srcDir, File targetFile) {
@@ -162,7 +160,7 @@ public class fileOperation {
 		try {
 			deleteImpl(filePathAndName);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 
@@ -171,14 +169,14 @@ public class fileOperation {
 		try {
 			deleteImpl(folderPath);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 
 	private static void deleteImpl (String source) throws Exception {
 		Path delPath = Paths.get(source);
 		if (!Files.exists(delPath)) {
-			logService.error("source not exist : " + source);
+			Log.error("source not exist : " + source);
 			return;
 		}
 
@@ -187,7 +185,7 @@ public class fileOperation {
 				//System.out.println("Deleting: " + path);
 				Files.delete(path);
 			} catch (Exception e) {
-				throw new RuntimeException(logService.error("Exception: " + e.toString()));
+				throw new RuntimeException(Log.error("Exception: " + e.toString()));
 			}
 		});
 	}
@@ -197,7 +195,7 @@ public class fileOperation {
 		try {
 			copyImpl(oldPath, newPath);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 
@@ -206,7 +204,7 @@ public class fileOperation {
 		try {
 			copyImpl(oldPath, newPath);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 
@@ -214,7 +212,7 @@ public class fileOperation {
 		Path sourceDir = Paths.get(oldPath);
         Path destinationDir = Paths.get(newPath);
         if (!Files.exists(sourceDir)) {
-            logService.error("source not exist : " + oldPath);
+        	Log.error("source not exist : " + oldPath);
             return;
         }
 
@@ -225,7 +223,7 @@ public class fileOperation {
                 //System.out.printf("Copying %s to %s%n", sourcePath, targetPath);
                 Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
-            	throw new RuntimeException(logService.error("Exception: " + e.toString()));
+            	throw new RuntimeException(Log.error("Exception: " + e.toString()));
             }
         });
 	}
@@ -236,7 +234,7 @@ public class fileOperation {
 			copyFile(oldPath, newPath);
 			delFile(oldPath);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 
@@ -246,7 +244,7 @@ public class fileOperation {
 			copyFolder(oldPath, newPath);
 			delFolder(oldPath);
 		} catch (Exception e) {
-			throw new Exception(logService.error("Exception: " + e.toString()));
+			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
 	}
 }

@@ -1,10 +1,10 @@
-package stock.master.app.service;
+package stock.master.app.util;
 
 import org.apache.log4j.Logger;
 
-public class logService {
+public class Log {
 	
-	private static Logger logger = Logger.getLogger(logService.class);
+	private static Logger logger = Logger.getLogger(Log.class);
 	
 	public static String debug(String message) {
 		

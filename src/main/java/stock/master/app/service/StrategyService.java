@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import stock.master.app.entity.Revenue;
 
 @Service
-public class strategyService extends repositoryService {
+public class StrategyService extends BaseService {
 	
 	public boolean strategy_incomeOver12Month (String sid) {
 		

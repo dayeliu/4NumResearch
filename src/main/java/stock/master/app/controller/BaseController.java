@@ -2,17 +2,25 @@ package stock.master.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import stock.master.app.service.stockListService;
-import stock.master.app.service.strategyService;
-import stock.master.app.service.wearnCrawlerService;
+import stock.master.app.service.CrawlService;
+import stock.master.app.service.ExportService;
+import stock.master.app.service.GetInfoService;
+import stock.master.app.service.StrategyService;
+import stock.master.app.service.UpdateService;
 
 public class BaseController {
 	@Autowired
-	stockListService stockList_service;
+	UpdateService updateService;
 	
 	@Autowired
-	wearnCrawlerService crawl_Service;
+	GetInfoService getInfoService;
 	
 	@Autowired
-	strategyService strategy_service;
+	StrategyService strategyService;
+	
+	@Autowired
+	ExportService exportService;
+	
+	@Autowired
+	CrawlService crawlService;
 }
