@@ -25,7 +25,7 @@ public class UpdateController extends BaseController {
 
 		int count = 0; 
 		try {
-			count = stockList_service.updateList();
+			count = updateService.UpdateStockList();
 		} catch (Exception e) {
 			throw new Exception (Log.error(e.toString()));
 		}

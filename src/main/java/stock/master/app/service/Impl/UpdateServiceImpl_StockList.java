@@ -1,4 +1,4 @@
-package stock.master.app.service;
+package stock.master.app.service.Impl;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.service.BaseService;
+import stock.master.app.util.Log;
 
 @Service
-public class stockListService extends repositoryService {
+public class UpdateServiceImpl_StockList extends BaseService {
 	
 	/*
 	 * source url : https://mops.twse.com.tw/mops/web/t51sb01
@@ -50,7 +52,7 @@ public class stockListService extends repositoryService {
 			exportStockListFile(ConstantKey.stock_list);
 
 		} catch (Exception e) {
-			throw new Exception(logService.error(e.toString()));
+			throw new Exception(Log.error(e.toString()));
 		}
 
 		return list.size();
@@ -63,7 +65,7 @@ public class stockListService extends repositoryService {
 	public String show(String sid) {
 		BasicInfo info = basicInfoRepository.findByStockId(sid);
 		if (info == null) {
-			logService.error("stock not exist in db " + sid);
+			Log.error("stock not exist in db " + sid);
 			return "";
 		}
 
@@ -96,12 +98,12 @@ public class stockListService extends repositoryService {
             }
 
         } catch (IOException e) {
-        	throw new Exception(logService.error(e.toString()));
+        	throw new Exception(Log.error(e.toString()));
         }finally{
             try {
                 fr.close();
             } catch (IOException e) {
-            	logService.error(e.toString());
+            	Log.error(e.toString());
             }
         }
 
@@ -132,7 +134,7 @@ public class stockListService extends repositoryService {
 					for (String sid : sids) {
 						
 						if (!list.containsKey(sid)) {
-							logService.error("stock not exist in db " + sid);
+							Log.error("stock not exist in db " + sid);
 							continue;
 						}
 
@@ -146,12 +148,12 @@ public class stockListService extends repositoryService {
 				}
 			}
 		} catch (IOException e) {
-			throw new Exception(logService.error(e.toString()));
+			throw new Exception(Log.error(e.toString()));
 		} finally {
 			try {
 				reader.close();
 			} catch (IOException e) {
-				logService.error(e.toString());
+				Log.error(e.toString());
 			}
 		}
 		
@@ -222,12 +224,12 @@ public class stockListService extends repositoryService {
 				list.put(info.getStockId(), info);
 			}
 		} catch (IOException e) {
-			throw new Exception(logService.error(e.toString()));
+			throw new Exception(Log.error(e.toString()));
 		} finally {
 			try {
 				reader.close();
 			} catch (IOException e) {
-				logService.error(e.toString());
+				Log.error(e.toString());
 			}
 		}
 	}
