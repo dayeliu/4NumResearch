@@ -1,4 +1,4 @@
-package stock.master.app.service;
+package stock.master.app.service.Impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,9 +12,10 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import stock.master.app.entity.Revenue;
+import stock.master.app.util.Log;
 
 @Service
-public class wearnCrawlerService extends repositoryService {
+public class wearnCrawlerService {
 	
 	private final String basic_url = "https://stock.wearn.com/";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyy-MM-dd");
@@ -31,21 +32,21 @@ public class wearnCrawlerService extends repositoryService {
 	 * 營收
 	 * */
 	public void updateRevenue(String sid) throws Exception {
-		logService.debug("===== updateRevenue begin ===== [" + sid + "]");
+		Log.debug("===== updateRevenue begin ===== [" + sid + "]");
 		
 		String url = basic_url + "asale.asp?kind=" + sid;
 		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
-		
+		/*
 		try {
 			Connection connect = Jsoup.connect(url);
 			Document doc = connect.timeout(5000).get();
 
 			boolean bImportAllToDb = false;
 			// get all from db
-			List<Revenue> revenueList = revenueRepository.findByStockIdOrderByDateDesc(sid);
-			if (revenueList.size() == 0) {  // initial db
+			//List<Revenue> revenueList = revenueRepository.findByStockIdOrderByDateDesc(sid);
+			//if (revenueList.size() == 0) {  // initial db
 				bImportAllToDb = true;
-			}
+			//}
 			
 			for (String className : classList) {
 
@@ -75,18 +76,18 @@ public class wearnCrawlerService extends repositoryService {
 						info.setAccurateLastYear(elements.select("td").get(7).text());
 						info.setAcccurate_yoy(elements.select("td").get(8).text());
 						
-						revenueRepository.save(info);
+						//revenueRepository.save(info);
 					}
 				}
 			}
 			
-			logService.debug("===== updateRevenue end =====");
+			Log.debug("===== updateRevenue end =====");
 		} catch (Exception e) {
-			throw new Exception(logService.error("[" + sid + "] " + e.toString()));
+			throw new Exception(Log.error("[" + sid + "] " + e.toString()));
 		} finally {
 			
 		}
-
+*/
 		return;
 	}
 }

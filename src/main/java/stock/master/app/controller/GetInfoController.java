@@ -19,13 +19,13 @@ import stock.master.app.util.Log;
 @RequestMapping(ConstantKey.API_PREFIX + "/getinfo")
 public class GetInfoController extends BaseController {
 
-	@GetMapping("/updateStockList")
+	@GetMapping("/{sid}")
 	public ResponseEntity<String> UpdateStockList() throws Exception {
 		Log.debug("===== UpdateStockList begin =====");
 
 		int count = 0; 
 		try {
-			count = stockList_service.updateList();
+			//count = stockList_service.updateList();
 		} catch (Exception e) {
 			throw new Exception (Log.error(e.toString()));
 		}
@@ -35,47 +35,5 @@ public class GetInfoController extends BaseController {
 
 		Log.debug("===== UpdateStockList end =====");
 		return new ResponseEntity<>(msg, HttpStatus.OK);
-	}
-	
-	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb() throws Exception {
-		Log.debug("===== InitialDb begin =====");
-
-		try {
-			List<String> stockIds = new ArrayList<String>();
-			stockIds.add("2330");
-			stockIds.add("3017");
-			
-			//List<Revenue> list = findByStockIdIn(stockIds);
-			
-			/*List<BasicInfo> basicInfoList = stockList_service.getAllStockInfo();
-			int idx = 0;
-			for (BasicInfo info : basicInfoList) {
-				logService.debug("[Index : " + idx + "]");
-
-				crawl_Service.updateRevenue(info.getStockId());
-				idx++;
-			}
-			*/	
-
-		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
-		}
-
-		Log.debug("===== InitialDb end =====");
-		
-		return new ResponseEntity<>("", HttpStatus.OK); 
-	}
-	
-	public ResponseEntity<String> InitialDbBySid() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
-	}
-	
-	public ResponseEntity<String> UpdateDb() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
-	}
-	
-	public ResponseEntity<String> UpdateDbBySid() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
 	}
 }

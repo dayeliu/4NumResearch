@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Revenue;
+import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.util.Log;
 
 @RestController
@@ -20,22 +21,42 @@ import stock.master.app.util.Log;
 public class UpdateController extends BaseController {
 
 	@GetMapping("/updateStockList")
-	public ResponseEntity<String> UpdateStockList() throws Exception {
+	public ResponseEntity<updateStockListResult> UpdateStockList() throws Exception {
 		Log.debug("===== UpdateStockList begin =====");
 
-		int count = 0; 
+		updateStockListResult result = null; 
 		try {
-			count = updateService.UpdateStockList();
+			result = updateService.UpdateStockList();
 		} catch (Exception e) {
 			throw new Exception (Log.error(e.toString()));
 		}
 
-		String msg = "Total count : " + count;
-		Log.debug(msg);
+
+		Log.debug(result.toString());
 
 		Log.debug("===== UpdateStockList end =====");
-		return new ResponseEntity<>(msg, HttpStatus.OK);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@GetMapping("/InitDb")
 	public ResponseEntity<String> InitialDb() throws Exception {

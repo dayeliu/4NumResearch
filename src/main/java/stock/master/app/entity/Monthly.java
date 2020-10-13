@@ -31,33 +31,6 @@ public class Monthly implements Serializable {
 	@Column(name = "stock_id", nullable = false)
 	private String stockId;
 	
-	@Column(name = "week", nullable = false)
-	private Date week;
-	
-	@Column(name = "average", nullable = false)
-	private double average;
-	
-	@Column(name = "over_400_amount", nullable = false)
-	private Long over_400_amount;
-	
-	@Column(name = "over_400_percent", nullable = false)
-	private double over_400_percent;
-	
-	@Column(name = "over_400_people", nullable = false)
-	private int over_400_people;
-	
-	@Column(name = "bet_400_600_people", nullable = false)
-	private int bet_400_600_people;
-	
-	@Column(name = "bet_600_800_people", nullable = false)
-	private int bet_600_800_people;
-	
-	@Column(name = "bet_800_1000_people", nullable = false)
-	private int bet_800_1000_people;
-	
-	@Column(name = "over_1000_people", nullable = false)
-	private int over_1000_people;
-	
-	@Column(name = "over_1000_percent", nullable = false)
-	private double over_1000_percent;
+	@Column(name = "date", nullable = false)
+	private Date date;
 }

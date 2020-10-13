@@ -23,7 +23,6 @@ import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Revenue;
 import stock.master.app.repository.BasicInfoRepository;
 import stock.master.app.repository.RevenueRepository;
-import stock.master.app.service.logService;
 
 @RestController
 @RequestMapping(ConstantKey.API_PREFIX + "/develop")

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.service.BaseService;
 import stock.master.app.util.Log;
 
@@ -31,9 +32,10 @@ public class UpdateServiceImpl_StockList extends BaseService {
 	 * output : StockList.csv
 	 * 
 	 * */
-	public int updateList() throws Exception {
+	public updateStockListResult updateList() throws Exception {
 
 		Map<String, BasicInfo> list = new HashMap<String, BasicInfo>();
+		updateStockListResult ret = null;
 
 		try {
 					
@@ -47,6 +49,9 @@ public class UpdateServiceImpl_StockList extends BaseService {
 			getClassification(ConstantKey.fine_industry, list);
 			getClassification(ConstantKey.detail_industry, list);
 
+			ret = getUpdateResult(list);
+
+			basicInfoRepository.deleteAll();
 			basicInfoRepository.saveAll(list.values());
 			
 			exportStockListFile(ConstantKey.stock_list);
@@ -55,9 +60,14 @@ public class UpdateServiceImpl_StockList extends BaseService {
 			throw new Exception(Log.error(e.toString()));
 		}
 
-		return list.size();
+		return ret;
 	}
 	
+	/*
+	 * input :  
+	 * output : a list of all stocks of structure BasicInfo
+	 * 
+	 * */
 	public List<BasicInfo> getAllStockInfo() {
 		return basicInfoRepository.findAllByOrderByStockIdAsc();
 	}
@@ -84,6 +94,29 @@ public class UpdateServiceImpl_StockList extends BaseService {
 		return ret;
 	}
 
+	private updateStockListResult getUpdateResult(Map<String, BasicInfo> list) {
+		updateStockListResult result = new updateStockListResult();
+		List<BasicInfo> added = new ArrayList<BasicInfo>();
+		List<BasicInfo> deleted = new ArrayList<BasicInfo>();
+		
+		for (String sid : list.keySet()) {
+			if (basicInfoRepository.existsById(sid)) {
+				basicInfoRepository.deleteById(sid);
+			} else {
+				added.add(list.get(sid));
+			}
+		}
+		
+		deleted = basicInfoRepository.findAll();
+
+		result.setTotalCount(list.size());
+		result.setAddedCount(added.size());
+		result.setAddStockIds(added);
+		result.setDeletedCount(deleted.size());
+		result.setDeleteStockIds(deleted);
+		return result;
+	}
+	
 	private boolean exportStockListFile(String path) throws Exception {
 		
 		File file = new File(path);

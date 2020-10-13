@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.entity.Weekly;
 import stock.master.app.service.BaseService;
+import stock.master.app.util.Log;
 
 
 @Service
@@ -20,12 +21,12 @@ public class CrawlServiceImpl_Norway extends BaseService {
 	 * 大戶籌碼
 	 * */
 	public List<Weekly> getWeeklyInfo (String sid, int fromYear, int fromMonth) {
-		LogService.debug("===== getWeeklyInfo begin ===== [" + sid + "]");
+		Log.debug("===== getWeeklyInfo begin ===== [" + sid + "]");
 		String url = basic_url + sid;
 		
 		List<Weekly> info = new ArrayList<Weekly>();
 		
-		LogService.debug("===== getWeeklyInfo end =====");
+		Log.debug("===== getWeeklyInfo end =====");
 		return info;
 	}
 

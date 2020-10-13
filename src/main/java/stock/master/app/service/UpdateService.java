@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import stock.master.app.repository.BasicInfoRepository;
+import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.service.Impl.UpdateServiceImpl_StockList;
 import stock.master.app.util.Log;
 
@@ -11,20 +12,19 @@ import stock.master.app.util.Log;
 public class UpdateService extends BaseService {
 
 	@Autowired
-	protected UpdateServiceImpl_StockList stockList;
+	protected UpdateServiceImpl_StockList stockList_impl;
 
-	public int UpdateStockList() {
-		Log.debug("===== UpdateStockList begin =====");
-		
-		int count = 0;
+	public updateStockListResult UpdateStockList() throws Exception {
+
+		updateStockListResult result = null;
+
 		try {
-			count = stockList.updateList();
+			result = stockList_impl.updateList();
 		} catch (Exception e) {
-			Log.error("Exception: " + e.toString());
+			throw new Exception(Log.error(e.toString()));
 		}
-		
-		Log.debug("===== UpdateStockList end ===== Count : " + count);
-		return count;
+
+		return result;
 	}
 
 }

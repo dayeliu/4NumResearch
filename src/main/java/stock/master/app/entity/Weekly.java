@@ -17,10 +17,6 @@ public class Weekly implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public Weekly() {
-		// TODO Auto-generated constructor stub
-	}
-
 	public Weekly(Long id, String stockId, Date date, Long over_400_amount, double over_400_percent,
 			int over_400_people, int bet_400_600_people, int bet_600_800_people, int bet_800_1000_people,
 			double over_1000_percent, int over_1000_people) {
