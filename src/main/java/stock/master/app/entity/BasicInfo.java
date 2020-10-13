@@ -110,4 +110,21 @@ public class BasicInfo implements Serializable {
 	public void setInitial(boolean initial) {
 		this.initial = initial;
 	}
+
+	@Override
+	public String toString() {
+		String str = "BasicInfo [\n" + 
+				"stockId = " + stockId + "\n" +
+				", name = " + name + "\n" +
+				", stockClass =" + stockClass + "\n" +
+				", category =" + category + "\n" +
+				", amount=" + amount + "\n" +
+				", lastModified=" + lastModified + "\n" +
+				", initial=" + initial + "\n" +
+				"]";
+		
+		return str;
+	}
+	
+	
 }
