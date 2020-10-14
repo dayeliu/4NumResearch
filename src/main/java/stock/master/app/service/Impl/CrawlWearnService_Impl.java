@@ -1,8 +1,8 @@
 package stock.master.app.service.Impl;
 
-public class CrawlServiceImpl_Wearn {
+public class CrawlWearnService_Impl {
 
-	public CrawlServiceImpl_Wearn() {
+	public CrawlWearnService_Impl() {
 		// TODO Auto-generated constructor stub
 	}
 

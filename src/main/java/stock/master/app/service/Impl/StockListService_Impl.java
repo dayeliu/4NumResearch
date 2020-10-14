@@ -22,7 +22,7 @@ import stock.master.app.service.BaseService;
 import stock.master.app.util.Log;
 
 @Service
-public class UpdateServiceImpl_StockList extends BaseService {
+public class StockListService_Impl extends BaseService {
 	
 	/*
 	 * source url : https://mops.twse.com.tw/mops/web/t51sb01

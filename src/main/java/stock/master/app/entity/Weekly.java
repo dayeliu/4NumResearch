@@ -17,13 +17,18 @@ public class Weekly implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public Weekly(Long id, String stockId, Date date, Long over_400_amount, double over_400_percent,
+	public Weekly() {
+		super();
+	}
+
+	public Weekly(Long id, String stockId, Date date, double average, Long over_400_amount, double over_400_percent,
 			int over_400_people, int bet_400_600_people, int bet_600_800_people, int bet_800_1000_people,
 			double over_1000_percent, int over_1000_people) {
 		super();
 		this.id = id;
 		this.stockId = stockId;
 		this.date = date;
+		this.average = average;
 		this.over_400_amount = over_400_amount;
 		this.over_400_percent = over_400_percent;
 		this.over_400_people = over_400_people;
@@ -51,6 +56,9 @@ public class Weekly implements Serializable {
 	@Column(name = "date", nullable = false)
 	private Date date;
 	
+	@Column(name = "average", nullable = false)
+	private double average;
+
 	@Column(name = "over_400_amount", nullable = false)
 	private Long over_400_amount;
 	
@@ -97,6 +105,14 @@ public class Weekly implements Serializable {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public double getAverage() {
+		return average;
+	}
+
+	public void setAverage(double average) {
+		this.average = average;
 	}
 
 	public Long getOver_400_amount() {

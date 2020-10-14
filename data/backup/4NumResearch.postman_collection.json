@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8080//stock/v1/update/updateStockList",
+					"raw": "http://127.0.0.1:8080//stock/v1/update/stockList",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -25,14 +25,40 @@
 						"stock",
 						"v1",
 						"update",
-						"updateStockList"
+						"stockList"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "InitialDb",
+			"name": "Initial Db by sid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/update/initdb",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"update",
+						"initdb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Initial Db",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -96,6 +122,32 @@
 		},
 		{
 			"name": "developFunction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/develop/function",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"develop",
+						"function"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "developFunction1",
 			"request": {
 				"method": "GET",
 				"header": [],

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ import stock.master.app.util.Log;
 @RequestMapping(ConstantKey.API_PREFIX + "/update")
 public class UpdateController extends BaseController {
 
-	@GetMapping("/updateStockList")
+	@GetMapping("/stockList")
 	public ResponseEntity<updateStockListResult> UpdateStockList() throws Exception {
 		Log.debug("===== UpdateStockList begin =====");
 
@@ -37,8 +38,16 @@ public class UpdateController extends BaseController {
 		Log.debug("===== UpdateStockList end =====");
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
-	
-	
+
+	@GetMapping("/initdb/{sid}")
+	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) {
+		Log.debug("===== InitialDbBySid begin ===== sid = " + sid);
+
+		String ret = updateService.initDbBySid(sid);
+		
+		Log.debug("===== InitialDbBySid end =====");
+		return new ResponseEntity<>(ret, HttpStatus.OK); 
+	}
 	
 	
 	
@@ -88,9 +97,7 @@ public class UpdateController extends BaseController {
 		return new ResponseEntity<>("", HttpStatus.OK); 
 	}
 	
-	public ResponseEntity<String> InitialDbBySid() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
-	}
+	
 	
 	public ResponseEntity<String> UpdateDb() {
 		return new ResponseEntity<>("", HttpStatus.OK); 
