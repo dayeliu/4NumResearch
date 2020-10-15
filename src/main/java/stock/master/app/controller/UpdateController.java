@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
-import stock.master.app.entity.BasicInfo;
-import stock.master.app.entity.Revenue;
 import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.util.Log;
 
@@ -36,66 +34,74 @@ public class UpdateController extends BaseController {
 		Log.debug(result.toString());
 
 		Log.debug("===== UpdateStockList end =====");
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		return new ResponseEntity<updateStockListResult>(result, HttpStatus.OK);
 	}
 
 	@GetMapping("/initdb/{sid}")
-	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) {
+	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
 		Log.debug("===== InitialDbBySid begin ===== sid = " + sid);
 
 		String ret = updateService.initDbBySid(sid);
 		
 		Log.debug("===== InitialDbBySid end =====");
-		return new ResponseEntity<>(ret, HttpStatus.OK); 
+		return new ResponseEntity<String>(ret, HttpStatus.OK);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb() throws Exception {
+	public ResponseEntity<String> InitialDb(){
 		Log.debug("===== InitialDb begin =====");
 
-		try {
-			List<String> stockIds = new ArrayList<String>();
-			stockIds.add("2330");
-			stockIds.add("3017");
-			
-			//List<Revenue> list = findByStockIdIn(stockIds);
-			
-			/*List<BasicInfo> basicInfoList = stockList_service.getAllStockInfo();
-			int idx = 0;
-			for (BasicInfo info : basicInfoList) {
-				logService.debug("[Index : " + idx + "]");
+		List<String> stockIds = new ArrayList<String>();
+		stockIds.add("2330");
+		stockIds.add("3017");
 
-				crawl_Service.updateRevenue(info.getStockId());
-				idx++;
+		int idx = 0;
+		for (String sid : stockIds) {
+			Log.debug("[Index : " + idx + "] " + sid);
+
+			try {
+				String ret = updateService.initDbBySid(sid);
+			} catch (Exception e) {
+				Log.error(e.toString());
 			}
-			*/	
 
-		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
+			idx++;
 		}
 
 		Log.debug("===== InitialDb end =====");
-		
-		return new ResponseEntity<>("", HttpStatus.OK); 
+
+		return new ResponseEntity<String>("done", HttpStatus.OK);
 	}
+
+	@GetMapping("/updateDb/{sid}")
+	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) {
+		Log.debug("===== UpdateDbBySid begin ===== sid = " + sid);
+
+		try {
+			String ret = updateService.updateDbBySid(sid);
+		} catch (Exception e) {
+			Log.error(e.toString());
+		}
+
+		Log.debug("===== UpdateDbBySid end =====");
+		return new ResponseEntity<String>("done", HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -103,7 +109,5 @@ public class UpdateController extends BaseController {
 		return new ResponseEntity<>("", HttpStatus.OK); 
 	}
 	
-	public ResponseEntity<String> UpdateDbBySid() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
-	}
+	
 }

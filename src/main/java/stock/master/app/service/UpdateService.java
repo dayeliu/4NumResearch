@@ -1,5 +1,6 @@
 package stock.master.app.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,33 +35,66 @@ public class UpdateService extends BaseService {
 		return result;
 	}
 
-	public String initDbBySid (String sid) {
+	public String initDbBySid (String sid) throws Exception {
 		
 		if (!basicInfoRepository.existsById(sid)) {
 			return Log.error("stock id not exist. id = " + sid);
 		}
 		
-		// daily
-		
-		// weekly
 		try {
-			List<Weekly> list = norwayService_impl.getWeeklyInfo(sid);
-			System.out.println("safdas");
+
+			InitWeekly(sid);
+
 		} catch (Exception e) {
-			
+			throw new Exception(Log.error(e.toString()));
 		}
-		
-		// monthly
-		
+
 		return "initDbBySid done";
 	}
 
+	private String InitWeekly (String sid) throws Exception {
+		if (weeklyRepository.existsByStockId(sid)) {
+			weeklyRepository.deleteByStockId(sid);
+		}
+		List<Weekly> list = norwayService_impl.getWeeklyInfo(sid, 20);
+		weeklyRepository.saveAll(list);
+		
+		return "InitWeekly done";
+	}
+
 	
-	
-	
-	
-	public String updateDbBySid (String sid) {
+	public String updateDbBySid (String sid) throws Exception {
+		
+		if (!basicInfoRepository.existsById(sid)) {
+			return Log.error("stock id not exist. id = " + sid);
+		}
+
+		try {
+
+			UpdateWeekly(sid);
+						
+		} catch (Exception e) {
+			throw new Exception(Log.error(e.toString()));
+		}
 		
 		return "updateDbBySid done";
+	}
+	
+	private String UpdateWeekly (String sid) throws Exception {
+		if (!weeklyRepository.existsByStockId(sid)) {
+			return Log.error("stock not init yet. sid = " + sid);
+		}
+
+		Weekly fromDb = weeklyRepository.findTop1ByStockIdOrderByDateDesc(sid);
+		List<Weekly> newData = norwayService_impl.getWeeklyInfo(sid, 6);
+		List<Weekly> readyToUpdate = new ArrayList<Weekly>();
+		for (Weekly info : newData) {
+			if (info.getDate().after(fromDb.getDate())) {
+				readyToUpdate.add(info);
+			}
+		}
+		weeklyRepository.saveAll(readyToUpdate);
+		
+		return "UpdateWeekly done";
 	}
 }

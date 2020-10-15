@@ -178,6 +178,13 @@ public class Weekly implements Serializable {
 	public void setOver_1000_people(int over_1000_people) {
 		this.over_1000_people = over_1000_people;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "Weekly [id=" + id + ", stockId=" + stockId + ", date=" + date + ", average=" + average
+				+ ", over_400_amount=" + over_400_amount + ", over_400_percent=" + over_400_percent
+				+ ", over_400_people=" + over_400_people + ", bet_400_600_people=" + bet_400_600_people
+				+ ", bet_600_800_people=" + bet_600_800_people + ", bet_800_1000_people=" + bet_800_1000_people
+				+ ", over_1000_percent=" + over_1000_percent + ", over_1000_people=" + over_1000_people + "]";
+	}
 }
