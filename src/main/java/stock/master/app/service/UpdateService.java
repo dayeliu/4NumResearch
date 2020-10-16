@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import stock.master.app.entity.Weekly;
 import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.service.Impl.CrawlNorwayService_Impl;
+import stock.master.app.service.Impl.ExportToCsv;
 import stock.master.app.service.Impl.StockListService_Impl;
 import stock.master.app.util.Log;
 
@@ -21,6 +22,9 @@ public class UpdateService extends BaseService {
 
 	@Autowired
 	protected CrawlNorwayService_Impl norwayService_impl;
+	
+	@Autowired
+	protected ExportToCsv exportToCsv;
 	
 	public updateStockListResult UpdateStockList() throws Exception {
 
@@ -52,17 +56,6 @@ public class UpdateService extends BaseService {
 		return "initDbBySid done";
 	}
 
-	private String InitWeekly (String sid) throws Exception {
-		if (weeklyRepository.existsByStockId(sid)) {
-			weeklyRepository.deleteByStockId(sid);
-		}
-		List<Weekly> list = norwayService_impl.getWeeklyInfo(sid, 20);
-		weeklyRepository.saveAll(list);
-		
-		return "InitWeekly done";
-	}
-
-	
 	public String updateDbBySid (String sid) throws Exception {
 		
 		if (!basicInfoRepository.existsById(sid)) {
@@ -79,7 +72,19 @@ public class UpdateService extends BaseService {
 		
 		return "updateDbBySid done";
 	}
-	
+
+	private String InitWeekly (String sid) throws Exception {
+		if (weeklyRepository.existsByStockId(sid)) {
+			weeklyRepository.deleteByStockId(sid);
+		}
+		List<Weekly> list = norwayService_impl.getWeeklyInfo(sid, 20);
+		weeklyRepository.saveAll(list);
+		
+		exportToCsv.exportMonthly(sid, list);
+
+		return "InitWeekly done";
+	}
+
 	private String UpdateWeekly (String sid) throws Exception {
 		if (!weeklyRepository.existsByStockId(sid)) {
 			return Log.error("stock not init yet. sid = " + sid);

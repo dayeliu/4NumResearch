@@ -220,7 +220,12 @@ public class fileOperation {
         Files.walk(sourceDir).forEach(sourcePath -> {
             try {
                 Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
-                //System.out.printf("Copying %s to %s%n", sourcePath, targetPath);
+                System.out.println("target parent : " + targetPath.getParent());
+                if (!Files.exists(targetPath.getParent())) {
+                	// create directory
+                	Path newDir = Paths.get(targetPath.getParent().toString());
+                	Files.createDirectory(newDir);
+                }
                 Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
             	throw new RuntimeException(Log.error("Exception: " + e.toString()));
@@ -246,5 +251,13 @@ public class fileOperation {
 		} catch (Exception e) {
 			throw new Exception(Log.error("Exception: " + e.toString()));
 		}
+	}
+	
+	public static boolean checkExist(String source) {
+		Path delPath = Paths.get(source);
+		if (!Files.exists(delPath)) {
+			return false;
+		}
+		return true;
 	}
 }

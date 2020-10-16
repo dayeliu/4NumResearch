@@ -84,6 +84,33 @@
 			"response": []
 		},
 		{
+			"name": "Update Db by sid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/update/updateDb/3017",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"update",
+						"updateDb",
+						"3017"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "CralwerTesting",
 			"request": {
 				"method": "GET",

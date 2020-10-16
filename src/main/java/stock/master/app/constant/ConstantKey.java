@@ -6,6 +6,8 @@ public class ConstantKey {
 	public static final String conf_dir = data_dir + "config//";
 	public static final String template_dir = conf_dir + "template//";
 	public static final String industry_dir = conf_dir + "industry//";
+	public static final String export_dir = data_dir + "database//";
+	public static final String export_template_dir = data_dir + "database//template//";
 
 	// stock list
 	public static final String otc_list = template_dir + "otc_list.csv";
