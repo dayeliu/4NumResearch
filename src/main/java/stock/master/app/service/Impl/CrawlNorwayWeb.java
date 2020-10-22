@@ -21,8 +21,9 @@ import stock.master.app.util.Log;
 
 
 @Service
-public class CrawlNorwayService_Impl extends BaseService {
+public class CrawlNorwayWeb extends BaseService {
 
+	// url => https://norway.twsthr.info/StockHolders.aspx?stock=2337
 	private final String basic_url = "https://norway.twsthr.info/StockHolders.aspx?stock=";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyyMMdd");
 

@@ -3,20 +3,23 @@ package stock.master.app.service.Impl;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
+import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Weekly;
 import stock.master.app.service.BaseService;
+import stock.master.app.util.Log;
 import stock.master.app.util.fileOperation;
 
 @Service
 public class ExportToCsv extends BaseService {
 
-	public boolean exportMonthly(String sid) throws Exception {
+	public boolean exportWeekly(String sid) throws Exception {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -45,4 +48,34 @@ public class ExportToCsv extends BaseService {
 		return true;
 	}
 
+	public boolean exportMonthly(String sid) throws Exception {
+		
+		return true;
+	}
+
+	public boolean exportStockList() throws Exception {
+		
+		File file = new File(ConstantKey.stock_list);
+		FileWriter fr = null;
+		try {
+            fr = new FileWriter(file);
+            
+            List<BasicInfo> basicInfoList = basicInfoRepository.findAllByOrderByStockIdAsc();
+            for (BasicInfo info : basicInfoList) {
+            	String data = info.toString();
+            	fr.write(data + "\n");
+            }
+
+        } catch (IOException e) {
+        	throw new Exception(Log.error(e.toString()));
+        }finally{
+            try {
+                fr.close();
+            } catch (IOException e) {
+            	Log.error(e.toString());
+            }
+        }
+
+		return true;
+	}
 }

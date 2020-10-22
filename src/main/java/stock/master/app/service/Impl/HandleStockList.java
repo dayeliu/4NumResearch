@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
@@ -22,8 +23,11 @@ import stock.master.app.service.BaseService;
 import stock.master.app.util.Log;
 
 @Service
-public class StockListService_Impl extends BaseService {
+public class HandleStockList extends BaseService {
 	
+	@Autowired
+	protected ExportToCsv exportToCsvImpl;
+
 	/*
 	 * source url : https://mops.twse.com.tw/mops/web/t51sb01
 	 * 需先用 notepad++ 將csv file 轉成 UTF-8 encoding
@@ -53,43 +57,12 @@ public class StockListService_Impl extends BaseService {
 
 			basicInfoRepository.deleteAll();
 			basicInfoRepository.saveAll(list.values());
-			
-			exportStockListFile(ConstantKey.stock_list);
+
+			exportToCsvImpl.exportStockList();
 
 		} catch (Exception e) {
 			throw new Exception(Log.error(e.toString()));
 		}
-
-		return ret;
-	}
-	
-	/*
-	 * input :  
-	 * output : a list of all stocks of structure BasicInfo
-	 * 
-	 * */
-	public List<BasicInfo> getAllStockInfo() {
-		return basicInfoRepository.findAllByOrderByStockIdAsc();
-	}
-
-	public String show(String sid) {
-		BasicInfo info = basicInfoRepository.findByStockId(sid);
-		if (info == null) {
-			Log.error("stock not exist in db " + sid);
-			return "";
-		}
-
-		return showFormat(info);
-	}
-	
-	private String showFormat(BasicInfo info) {
-		if (info == null) {
-			return "";
-		}
-
-		// EX : 2330 (台積電, 111/25930380) : 半導體*, 半導體指標, TSE-電子, TSE-半導體, APPLE, AMD
-		String ret = "[" + info.getStockClass() + "] " + info.getStockId() + 
-    			" (" + info.getName() + ", " + (int)(info.getAmount()*0.0015) + "/" + info.getAmount() + ") : " + info.getCategory();
 
 		return ret;
 	}
@@ -115,32 +88,6 @@ public class StockListService_Impl extends BaseService {
 		result.setDeletedCount(deleted.size());
 		result.setDeleteStockIds(deleted);
 		return result;
-	}
-	
-	private boolean exportStockListFile(String path) throws Exception {
-		
-		File file = new File(path);
-		FileWriter fr = null;
-		try {
-            fr = new FileWriter(file);
-            
-            List<BasicInfo> basicInfoList = basicInfoRepository.findAllByOrderByStockIdAsc();
-            for (BasicInfo info : basicInfoList) {
-            	String data = showFormat(info);
-            	fr.write(data + "\n");
-            }
-
-        } catch (IOException e) {
-        	throw new Exception(Log.error(e.toString()));
-        }finally{
-            try {
-                fr.close();
-            } catch (IOException e) {
-            	Log.error(e.toString());
-            }
-        }
-
-		return true;
 	}
 
 	private boolean getClassification(String classificationList, Map<String, BasicInfo> list) throws Exception {

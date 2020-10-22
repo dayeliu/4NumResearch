@@ -1,8 +1,5 @@
 package stock.master.app.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,19 +18,9 @@ public class UpdateController extends BaseController {
 
 	@GetMapping("/stockList")
 	public ResponseEntity<updateStockListResult> UpdateStockList() throws Exception {
-		Log.debug("===== UpdateStockList begin =====");
 
-		updateStockListResult result = null; 
-		try {
-			result = updateService.UpdateStockList();
-		} catch (Exception e) {
-			throw new Exception (Log.error(e.toString()));
-		}
+		updateStockListResult result = updateService.UpdateStockList();
 
-
-		Log.debug(result.toString());
-
-		Log.debug("===== UpdateStockList end =====");
 		return new ResponseEntity<updateStockListResult>(result, HttpStatus.OK);
 	}
 

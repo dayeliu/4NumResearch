@@ -113,17 +113,12 @@ public class BasicInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		String str = "BasicInfo [\n" + 
-				"stockId = " + stockId + "\n" +
-				", name = " + name + "\n" +
-				", stockClass =" + stockClass + "\n" +
-				", category =" + category + "\n" +
-				", amount=" + amount + "\n" +
-				", lastModified=" + lastModified + "\n" +
-				", initial=" + initial + "\n" +
-				"]";
-		
-		return str;
+
+		// EX : 2330 (台積電, 111/25930380) : 半導體*, 半導體指標, TSE-電子, TSE-半導體, APPLE, AMD
+		String ret = "[" + stockClass + "] " + stockId + 
+    			" (" + name + ", " + (int)(amount*0.0015) + "/" + amount + ") : " + category;
+
+		return ret;
 	}
 	
 	
