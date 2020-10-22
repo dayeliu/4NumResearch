@@ -16,5 +16,6 @@ public interface WeeklyRepository extends JpaRepository<Weekly, Long>, JpaSpecif
 
 	boolean existsByStockId(String stockId);
 	
+	List<Weekly> findByStockIdOrderByDateDesc(String stockId);
 	Weekly findTop1ByStockIdOrderByDateDesc(String stockId);
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Weekly;
 import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.service.Impl.CrawlNorwayService_Impl;
@@ -39,10 +40,34 @@ public class UpdateService extends BaseService {
 		return result;
 	}
 
-	public String initDbBySid (String sid) throws Exception {
-		
+	/*
+	 * initial database
+	 * */
+	public void initDb () {
+
+		Log.debug("===== initDb =====");
+
+		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			initDbBySid(stock.getStockId());
+
+			idx++;
+		}
+
+		Log.debug("===== initDb done =====");
+	}
+
+	public void initDbBySid (String sid) {
+
+		Log.debug("===== initDbBySid : " + sid + " =====");
+
 		if (!basicInfoRepository.existsById(sid)) {
-			return Log.error("stock id not exist. id = " + sid);
+			Log.error("stock id not exist. id = " + sid);
+			return;
 		}
 		
 		try {
@@ -50,16 +75,40 @@ public class UpdateService extends BaseService {
 			InitWeekly(sid);
 
 		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
+			Log.error(e.toString());
+			return;
 		}
 
-		return "initDbBySid done";
+		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
 
-	public String updateDbBySid (String sid) throws Exception {
-		
+	/*
+	 * update database
+	 * */
+	public void updateDb () {
+		Log.debug("===== updateDb =====");
+
+		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			updateDbBySid(stock.getStockId());
+
+			idx++;
+		}
+
+		Log.debug("===== updateDb done =====");
+	}
+
+	public void updateDbBySid (String sid) {
+
+		Log.debug("===== updateDbBySid : " + sid + " =====");
+
 		if (!basicInfoRepository.existsById(sid)) {
-			return Log.error("stock id not exist. id = " + sid);
+			Log.error("stock id not exist. id = " + sid);
+			return;
 		}
 
 		try {
@@ -67,39 +116,60 @@ public class UpdateService extends BaseService {
 			UpdateWeekly(sid);
 						
 		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
+			Log.error(e.toString());
+			return;
 		}
 		
-		return "updateDbBySid done";
+		Log.debug("===== updateDbBySid : " + sid + " done =====");
 	}
 
-	private String InitWeekly (String sid) throws Exception {
+	/*
+	 * handle weekly data
+	 * 
+	 * */
+	private void InitWeekly (String sid) throws Exception {
 		if (weeklyRepository.existsByStockId(sid)) {
 			weeklyRepository.deleteByStockId(sid);
 		}
-		List<Weekly> list = norwayService_impl.getWeeklyInfo(sid, 20);
-		weeklyRepository.saveAll(list);
-		
-		exportToCsv.exportMonthly(sid, list);
 
-		return "InitWeekly done";
+		List<Weekly> list = norwayService_impl.getWeeklyInfo(sid, 10);
+		int count = list.size();
+		String msg = "Count:" + count + " Add From " + list.get(0).getDate().toString() + " to " + list.get(count - 1).getDate().toString();
+		Log.debug(msg);
+		
+		weeklyRepository.saveAll(list);
+
+		exportToCsv.exportMonthly(sid);
+		Log.debug("InitWeekly done");
 	}
 
-	private String UpdateWeekly (String sid) throws Exception {
+	private void UpdateWeekly (String sid) throws Exception {
 		if (!weeklyRepository.existsByStockId(sid)) {
-			return Log.error("stock not init yet. sid = " + sid);
+			Log.error("stock not init yet. sid = " + sid);
+			return;
 		}
 
 		Weekly fromDb = weeklyRepository.findTop1ByStockIdOrderByDateDesc(sid);
-		List<Weekly> newData = norwayService_impl.getWeeklyInfo(sid, 6);
+		List<Weekly> newData = norwayService_impl.getWeeklyInfo(sid, 4);
 		List<Weekly> readyToUpdate = new ArrayList<Weekly>();
 		for (Weekly info : newData) {
 			if (info.getDate().after(fromDb.getDate())) {
 				readyToUpdate.add(info);
 			}
 		}
+
+		String msg = "";
+		int count = readyToUpdate.size();
+		if (count == 0) {
+			msg = "Already up to date";
+		} else {
+			msg = "Count:" + count + " Update From " + readyToUpdate.get(0).getDate().toString() + " to " + readyToUpdate.get(count - 1).getDate().toString();
+		}
+		Log.debug(msg);
+
 		weeklyRepository.saveAll(readyToUpdate);
-		
-		return "UpdateWeekly done";
+
+		exportToCsv.exportMonthly(sid);
+		Log.debug("UpdateWeekly done");
 	}
 }

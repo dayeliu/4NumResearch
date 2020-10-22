@@ -38,76 +38,35 @@ public class UpdateController extends BaseController {
 	}
 
 	@GetMapping("/initdb/{sid}")
-	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
-		Log.debug("===== InitialDbBySid begin ===== sid = " + sid);
+	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) {
 
-		String ret = updateService.initDbBySid(sid);
-		
-		Log.debug("===== InitialDbBySid end =====");
-		return new ResponseEntity<String>(ret, HttpStatus.OK);
+		updateService.initDbBySid(sid);
+
+		return new ResponseEntity<String>("InitialDbBySid:" + sid, HttpStatus.OK);
 	}
 	
 	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb(){
-		Log.debug("===== InitialDb begin =====");
+	public ResponseEntity<String> InitialDb() {
 
-		List<String> stockIds = new ArrayList<String>();
-		stockIds.add("2330");
-		stockIds.add("3017");
+		updateService.initDb();
 
-		int idx = 0;
-		for (String sid : stockIds) {
-			Log.debug("[Index : " + idx + "] " + sid);
-
-			try {
-				String ret = updateService.initDbBySid(sid);
-			} catch (Exception e) {
-				Log.error(e.toString());
-			}
-
-			idx++;
-		}
-
-		Log.debug("===== InitialDb end =====");
-
-		return new ResponseEntity<String>("done", HttpStatus.OK);
+		return new ResponseEntity<String>("InitDb", HttpStatus.OK);
 	}
 
 	@GetMapping("/updateDb/{sid}")
 	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) {
-		Log.debug("===== UpdateDbBySid begin ===== sid = " + sid);
 
-		try {
-			String ret = updateService.updateDbBySid(sid);
-		} catch (Exception e) {
-			Log.error(e.toString());
-		}
+		updateService.updateDbBySid(sid);
 
-		Log.debug("===== UpdateDbBySid end =====");
-		return new ResponseEntity<String>("done", HttpStatus.OK);
+		return new ResponseEntity<String>("UpdateDbBySid:" + sid, HttpStatus.OK);
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@GetMapping("/updateDb")
 	public ResponseEntity<String> UpdateDb() {
-		return new ResponseEntity<>("", HttpStatus.OK); 
+
+		updateService.updateDb();
+
+		return new ResponseEntity<String>("UpdateDb", HttpStatus.OK);
 	}
-	
-	
+
 }

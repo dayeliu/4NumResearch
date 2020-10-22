@@ -95,14 +95,18 @@ public class CrawlNorwayService_Impl extends BaseService {
 		
 		return result;
 	}
-	
+
 	private void debugPrint (Elements elements) {
 		int ccc = elements.size();
 		for (int j = 0 ; j < ccc ; j++) {
 			System.out.println(elements.get(j).text());
 		}
 	}
-	
+
+	/*
+	 * sort from new to old
+	 * 
+	 * */
 	private List<Weekly> MapSortByKey(Map<String, Weekly> list) {
 		
         List<Weekly> result = new ArrayList<Weekly>();

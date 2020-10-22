@@ -37,7 +37,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8080//stock/v1/update/initdb",
+					"raw": "http://127.0.0.1:8080//stock/v1/update/initdb/3017",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -51,7 +51,8 @@
 						"stock",
 						"v1",
 						"update",
-						"initdb"
+						"initdb",
+						"3017"
 					]
 				}
 			},
@@ -105,6 +106,32 @@
 						"update",
 						"updateDb",
 						"3017"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Db",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8080//stock/v1/update/updateDb",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"stock",
+						"v1",
+						"update",
+						"updateDb"
 					]
 				}
 			},

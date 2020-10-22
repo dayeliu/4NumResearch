@@ -220,7 +220,7 @@ public class fileOperation {
         Files.walk(sourceDir).forEach(sourcePath -> {
             try {
                 Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
-                System.out.println("target parent : " + targetPath.getParent());
+                //System.out.println("target parent : " + targetPath.getParent());
                 if (!Files.exists(targetPath.getParent())) {
                 	// create directory
                 	Path newDir = Paths.get(targetPath.getParent().toString());
