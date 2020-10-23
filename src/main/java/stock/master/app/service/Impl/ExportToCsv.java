@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.entity.Monthly;
 import stock.master.app.entity.Weekly;
 import stock.master.app.service.BaseService;
 import stock.master.app.util.Log;
@@ -19,16 +20,24 @@ import stock.master.app.util.fileOperation;
 @Service
 public class ExportToCsv extends BaseService {
 
-	public boolean exportWeekly(String sid) throws Exception {
+	final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	
+	public boolean exportDaily(String sid) throws Exception {
+		
+		
+		
+		return true;
+	}
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	public boolean exportWeekly(String sid) throws Exception {
 		
 		final String fileName = sid + "_" + "weekly.csv";
 		final String filePath = ConstantKey.export_dir + sid + "//" + fileName;
 		
-		if (!fileOperation.checkExist(filePath)) {
-			fileOperation.copyFile(ConstantKey.export_template_dir + "weekly.csv", filePath);
+		if (fileOperation.checkExist(filePath)) {
+			fileOperation.delFile(filePath);
 		}
+		fileOperation.copyFile(ConstantKey.export_template_dir + "weekly.csv", filePath);
 		
 		File file = new File(filePath);
 		FileWriter fr = new FileWriter(file, true);
@@ -50,6 +59,30 @@ public class ExportToCsv extends BaseService {
 
 	public boolean exportMonthly(String sid) throws Exception {
 		
+		final String fileName = sid + "_" + "monthly.csv";
+		final String filePath = ConstantKey.export_dir + sid + "//" + fileName;
+		
+		if (fileOperation.checkExist(filePath)) {
+			fileOperation.delFile(filePath);
+		}
+		fileOperation.copyFile(ConstantKey.export_template_dir + "monthly.csv", filePath);
+		
+		File file = new File(filePath);
+		FileWriter fr = new FileWriter(file, true);
+		BufferedWriter br = new BufferedWriter(fr);
+
+		List<Monthly> list = monthlyRepository.findByStockIdOrderByDateDesc(sid);
+		for (Monthly info : list) {
+			String strDate = formatter.format(info.getDate());
+			String str = strDate + "," + info.getIncome() + "," + info.getMom() + "," + info.getIncomeLastYear() +
+					"," + info.getYoy() + "," + info.getAccurate() + "," + info.getAccurateLastYear() + "," + info.getAcccurate_yoy() + ",";
+			br.write(str + "\n");
+			br.flush();
+		}
+
+		br.close();
+		fr.close();
+
 		return true;
 	}
 

@@ -134,4 +134,11 @@ public class Monthly implements Serializable {
 	public void setAcccurate_yoy(String acccurate_yoy) {
 		this.acccurate_yoy = acccurate_yoy;
 	}
+
+	@Override
+	public String toString() {
+		return "Monthly [id=" + id + ", stockId=" + stockId + ", date=" + date + ", income=" + income + ", mom=" + mom
+				+ ", incomeLastYear=" + incomeLastYear + ", yoy=" + yoy + ", accurate=" + accurate
+				+ ", accurateLastYear=" + accurateLastYear + ", acccurate_yoy=" + acccurate_yoy + "]";
+	}
 }

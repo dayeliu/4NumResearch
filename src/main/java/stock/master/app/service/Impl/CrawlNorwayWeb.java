@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -80,6 +81,9 @@ public class CrawlNorwayWeb extends BaseService {
 				info.setOver_1000_percent(Double.valueOf(elements.get(13).text().replace(",", "")));
 
 				// date
+				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+				inputDateFormat.setTimeZone(gmtTimeZone);
+
 				String dateStr = elements.get(2).text();
 				Date t = inputDateFormat.parse(dateStr);
 				info.setDate(t);

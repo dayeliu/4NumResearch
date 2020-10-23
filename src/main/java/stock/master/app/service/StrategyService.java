@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import stock.master.app.entity.Revenue;
+
 
 @Service
 public class StrategyService extends BaseService {
 	
 	public boolean strategy_incomeOver12Month (String sid) {
 		
-		List<Revenue> revenueList = revenueRepository.findByStockIdOrderByDateDesc(sid);
+		/*List<Revenue> revenueList = revenueRepository.findByStockIdOrderByDateDesc(sid);
 		if (revenueList.size() == 0) {
 			return false;
 		}
@@ -29,7 +29,7 @@ public class StrategyService extends BaseService {
 			
 			count--;
 		}
-		
+		*/
 		return true;
 	}
 }
