@@ -76,7 +76,7 @@ public class CrawlWearnWeb {
 		// debug
 		/*
 		for (Monthly tmp : result) {
-			System.out.println(tmp.toString());
+			Log.debug(tmp.toString());
 		}*/
 
 		return result;
@@ -90,13 +90,11 @@ public class CrawlWearnWeb {
 		GetNetbuy(sid, year, month, data);
 		GetAcredit(sid, year, month, data);
 		
-		
-		
 		List<Daily> result = MapSortByKeyDaily(data);
+		CalculateAverage(result);
 		// debug
-		/*
-		for (Monthly tmp : result) {
-			System.out.println(tmp.toString());
+		/*for (Daily tmp : result) {
+			Log.debug(tmp.toString());
 		}*/
 
 		return result;
@@ -142,10 +140,10 @@ public class CrawlWearnWeb {
 					info.setStockId(sid);
 				}
 
-				info.setOpen(Float.parseFloat(elements.select("td").get(1).text()));
-				info.setHigh(Float.parseFloat(elements.select("td").get(2).text()));
-				info.setLow(Float.parseFloat(elements.select("td").get(3).text()));
-				info.setClose(Float.parseFloat(elements.select("td").get(4).text()));
+				info.setOpen(Float.parseFloat(elements.select("td").get(1).text().replace(",", "")));
+				info.setHigh(Float.parseFloat(elements.select("td").get(2).text().replace(",", "")));
+				info.setLow(Float.parseFloat(elements.select("td").get(3).text().replace(",", "")));
+				info.setClose(Float.parseFloat(elements.select("td").get(4).text().replace(",", "")));
 				info.setVolumn(Integer.parseInt(elements.select("td").get(5).text().replace(",", "")));
 
 				data.put(newDateStr, info);
@@ -154,17 +152,146 @@ public class CrawlWearnWeb {
 	}
 	
 	/*
+	 * https://stock.wearn.com/netbuy.asp?Year=109&month=09&kind=3017
 	 * 法人籌碼
+	 * 
+	 * year : 民國
+	 * month : 2位數
 	 * */
 	private void GetNetbuy(String sid, String year, String month, Map<String, Daily> data) throws Exception {
 		
+		String url = basic_url + "netbuy.asp?Year=" + year + "&month=" + month + "&kind=" + sid;
+		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
+		
+		Connection connect = Jsoup.connect(url);
+		Document doc = connect.timeout(5000).get();
+
+		for (String className : classList) {
+
+			Elements mainElements = doc.select(className);
+			int count = mainElements.size();
+			for (int i = 0 ; i < count ; i++) {
+				Elements elements = mainElements.get(i).select("td");
+
+				// date
+				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+				inputDateFormat.setTimeZone(gmtTimeZone);
+
+				String dateStr = elements.select("td").get(0).text();
+				String[] split = dateStr.split("/");
+				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-" + split[2];
+				Date t = inputDateFormat.parse(newDateStr);
+
+				Daily info = null;
+				if (data.containsKey(newDateStr)) {
+					info = data.get(newDateStr);
+				} else {
+					info = new Daily();
+					info.setDate(t);
+					info.setStockId(sid);
+				}
+
+				info.setTosin(Integer.parseInt(elements.select("td").get(1).text().replace(",", "")));
+				info.setZyin(Integer.parseInt(elements.select("td").get(2).text().replace(",", "")));
+				info.setWize(Integer.parseInt(elements.select("td").get(3).text().replace(",", "")));
+
+				data.put(newDateStr, info);
+			}
+		}
 	}
 	
 	/*
+	 * https://stock.wearn.com/acredit.asp?Year=109&month=09&kind=3017
 	 * 融資融券
+	 * 
+	 * year : 民國
+	 * month : 2位數
 	 * */
 	private void GetAcredit(String sid, String year, String month, Map<String, Daily> data) throws Exception {
 		
+		String url = basic_url + "acredit.asp?Year=" + year + "&month=" + month + "&kind=" + sid;
+		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
+		
+		Connection connect = Jsoup.connect(url);
+		Document doc = connect.timeout(5000).get();
+
+		for (String className : classList) {
+
+			Elements mainElements = doc.select(className);
+			int count = mainElements.size();
+			for (int i = 0 ; i < count ; i++) {
+				Elements elements = mainElements.get(i).select("td");
+
+				// date
+				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+				inputDateFormat.setTimeZone(gmtTimeZone);
+
+				String dateStr = elements.select("td").get(0).text();
+				String[] split = dateStr.split("/");
+				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-" + split[2];
+				Date t = inputDateFormat.parse(newDateStr);
+
+				Daily info = null;
+				if (data.containsKey(newDateStr)) {
+					info = data.get(newDateStr);
+				} else {
+					info = new Daily();
+					info.setDate(t);
+					info.setStockId(sid);
+				}
+
+				info.setBuy(Integer.parseInt(elements.select("td").get(1).text().replace(",", "")));
+				info.setSell(Integer.parseInt(elements.select("td").get(3).text().replace(",", "")));
+
+				data.put(newDateStr, info);
+			}
+		}
+	}
+
+	private void CalculateAverage(List<Daily> list) {
+		int count = list.size();
+		
+		List<Float> ma_5 = new ArrayList<Float>();
+		List<Float> ma_10 = new ArrayList<Float>();
+		List<Float> ma_20 = new ArrayList<Float>();
+		List<Float> ma_60 = new ArrayList<Float>();
+		for (int i = count - 1 ; i >= 0 ; i--) {
+			Daily daily = list.get(i);
+
+			Float accurate = 0f;
+			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_5, 5);
+			if (daily.getMa_5() == 0) {
+				daily.setMa_5(accurate);
+			}
+			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_10, 10);
+			if (daily.getMa_10() == 0) {
+				daily.setMa_10(accurate);
+			}
+			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_20, 20);
+			if (daily.getMa_20() == 0) {
+				daily.setMa_20(accurate);
+			}
+			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_60, 60);
+			if (daily.getMa_60() == 0) {
+				daily.setMa_60(accurate);
+			}
+			
+			list.set(i, daily);
+		}
+	}
+	
+	private Float CalculateAverageImpl (Float close, List<Float> accuList, int maCount) {
+		accuList.add(close);
+		if (accuList.size() > maCount) {
+			accuList.remove(0);
+		}
+		
+		Float accurate = 0f;
+		for (Float tmp : accuList) {
+			accurate += tmp;
+		}
+		
+		return accurate / maCount;
 	}
 
 	private List<Monthly> MapSortByKey(Map<String, Monthly> list) {

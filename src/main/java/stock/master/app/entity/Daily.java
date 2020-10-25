@@ -208,4 +208,13 @@ public class Daily {
 	public void setSell(int sell) {
 		this.sell = sell;
 	}
+
+	@Override
+	public String toString() {
+		return "Daily [id=" + id + ", stockId=" + stockId + ", date=" + date + ", open=" + open + ", close=" + close
+				+ ", high=" + high + ", low=" + low + ", volumn=" + volumn + ", ma_5=" + ma_5 + ", ma_10=" + ma_10
+				+ ", ma_20=" + ma_20 + ", ma_60=" + ma_60 + ", wize=" + wize + ", tosin=" + tosin + ", zyin=" + zyin
+				+ ", buy=" + buy + ", sell=" + sell + "]";
+	}
+
 }

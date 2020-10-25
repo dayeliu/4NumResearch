@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.resource.vo.updateStockListResult;
-import stock.master.app.util.Log;
 
 @RestController
 @RequestMapping(ConstantKey.API_PREFIX + "/update")

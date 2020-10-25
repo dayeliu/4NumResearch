@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
+import stock.master.app.entity.Daily;
 import stock.master.app.entity.Monthly;
 import stock.master.app.entity.Weekly;
 import stock.master.app.service.BaseService;
@@ -21,10 +22,35 @@ import stock.master.app.util.fileOperation;
 public class ExportToCsv extends BaseService {
 
 	final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-	
+	java.text.DecimalFormat df = new java.text.DecimalFormat("#.##");
+
 	public boolean exportDaily(String sid) throws Exception {
 		
+		final String fileName = sid + "_" + "daily.csv";
+		final String filePath = ConstantKey.export_dir + sid + "//" + fileName;
 		
+		if (fileOperation.checkExist(filePath)) {
+			fileOperation.delFile(filePath);
+		}
+		fileOperation.copyFile(ConstantKey.export_template_dir + "daily.csv", filePath);
+		
+		File file = new File(filePath);
+		FileWriter fr = new FileWriter(file, true);
+		BufferedWriter br = new BufferedWriter(fr);
+
+		List<Daily> list = dailyRepository.findByStockIdOrderByDateDesc(sid);
+		for (Daily info : list) {
+			String strDate = formatter.format(info.getDate());
+			String str = strDate + "," + info.getOpen() + "," + info.getClose() + "," + info.getHigh() + "," + info.getLow()
+			+ "," + info.getVolumn() + "," + df.format(info.getMa_5()) + "," + info.getMa_10() + "," + info.getMa_20()
+			+ "," + info.getMa_60() + "," + info.getTosin() + "," + info.getWize() + "," + info.getZyin()
+			+ "," + info.getBuy() + "," + info.getSell() + ",";
+			br.write(str + "\n");
+			br.flush();
+		}
+
+		br.close();
+		fr.close();
 		
 		return true;
 	}

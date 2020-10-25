@@ -16,6 +16,6 @@ public interface DailyRepository extends JpaRepository<Daily, Long>, JpaSpecific
 
 	boolean existsByStockId(String stockId);
 	
-	List<Weekly> findByStockIdOrderByDateDesc(String stockId);
-	Weekly findTop1ByStockIdOrderByDateDesc(String stockId);
+	List<Daily> findByStockIdOrderByDateDesc(String stockId);
+	Daily findTop1ByStockIdOrderByDateDesc(String stockId);
 }

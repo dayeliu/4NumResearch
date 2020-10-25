@@ -169,6 +169,7 @@ public class UpdateService extends BaseService {
 		}*/
 
 		list.addAll(crawWearnyImpl.getDailylyInfo(sid, "109", "09"));
+		//list.addAll(crawWearnyImpl.getDailylyInfo(sid, "109", "08"));
 		
 		int count = list.size();
 		String msg = "Count:" + count + " Add From " + list.get(0).getDate().toString() + " to " + list.get(count - 1).getDate().toString();
