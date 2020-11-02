@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.entity.Daily;
 import stock.master.app.entity.Monthly;
-import stock.master.app.entity.Weekly;
 import stock.master.app.util.Log;
 
 @Service
 public class CrawlWearnWeb {
 
+	private final int retryTime = 3;
 	private final String basic_url = "https://stock.wearn.com/";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyy-MM-dd");
 
@@ -34,13 +34,30 @@ public class CrawlWearnWeb {
 	public List<Monthly> getMonthlyInfo (String sid) throws Exception {
 		
 		String url = basic_url + "asale.asp?kind=" + sid;
-		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
+
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+		
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
 
 		Map<String, Monthly> data = new HashMap<String, Monthly>();
-		
-		Connection connect = Jsoup.connect(url);
-		Document doc = connect.timeout(5000).get();
-
+		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
 		for (String className : classList) {
 
 			Elements mainElements = doc.select(className);

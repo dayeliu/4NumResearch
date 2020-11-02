@@ -76,13 +76,12 @@ public class UpdateService extends BaseService {
 		Log.debug("===== initDbBySid : " + sid + " =====");
 
 		if (!basicInfoRepository.existsById(sid)) {
-			Log.error("stock id not exist. id = " + sid);
-			return;
+			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 		
 		//InitDaily(sid);
 		InitWeekly(sid);
-		//InitMonthly(sid);
+		InitMonthly(sid);
 
 		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
@@ -90,7 +89,7 @@ public class UpdateService extends BaseService {
 	/*
 	 * update database
 	 * */
-	public void updateDb () {
+	public void updateDb () throws Exception {
 		Log.debug("===== updateDb =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
@@ -107,24 +106,16 @@ public class UpdateService extends BaseService {
 		Log.debug("===== updateDb done =====");
 	}
 
-	public void updateDbBySid (String sid) {
+	public void updateDbBySid (String sid) throws Exception {
 
 		Log.debug("===== updateDbBySid : " + sid + " =====");
 
 		if (!basicInfoRepository.existsById(sid)) {
-			Log.error("stock id not exist. id = " + sid);
-			return;
+			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 
-		try {
-
-			UpdateWeekly(sid);
-			//UpdateMonthly(sid);
-						
-		} catch (Exception e) {
-			Log.error(e.toString());
-			return;
-		}
+		UpdateWeekly(sid);
+		//UpdateMonthly(sid);
 		
 		Log.debug("===== updateDbBySid : " + sid + " done =====");
 	}
@@ -193,8 +184,7 @@ public class UpdateService extends BaseService {
 
 	private void UpdateWeekly (String sid) throws Exception {
 		if (!weeklyRepository.existsByStockId(sid)) {
-			Log.error("stock not init yet. sid = " + sid);
-			return;
+			throw new Exception(Log.error("stock not init yet. sid = " + sid));
 		}
 
 		Weekly fromDb = weeklyRepository.findTop1ByStockIdOrderByDateDesc(sid);

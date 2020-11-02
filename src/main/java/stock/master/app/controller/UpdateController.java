@@ -32,7 +32,7 @@ public class UpdateController extends BaseController {
 	}
 	
 	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb() {
+	public ResponseEntity<String> InitialDb() throws Exception {
 
 		updateService.initDb();
 
@@ -40,7 +40,7 @@ public class UpdateController extends BaseController {
 	}
 
 	@GetMapping("/updateDb/{sid}")
-	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) {
+	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
 
 		updateService.updateDbBySid(sid);
 
@@ -48,7 +48,7 @@ public class UpdateController extends BaseController {
 	}
 	
 	@GetMapping("/updateDb")
-	public ResponseEntity<String> UpdateDb() {
+	public ResponseEntity<String> UpdateDb() throws Exception {
 
 		updateService.updateDb();
 
