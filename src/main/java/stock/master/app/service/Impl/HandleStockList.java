@@ -1,13 +1,8 @@
 package stock.master.app.service.Impl;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,28 +36,20 @@ public class HandleStockList extends BaseService {
 		Map<String, BasicInfo> list = new HashMap<String, BasicInfo>();
 		updateStockListResult ret = null;
 
-		try {
-					
-			getCompanyList(ConstantKey.otc_list, list);
-			getCompanyList(ConstantKey.tse_list, list);
-			
-			getClassification(ConstantKey.daniel_fine, list);
-			getClassification(ConstantKey.daniel_rough, list);
-			getClassification(ConstantKey.otc_rough, list);
-			getClassification(ConstantKey.tse_rough, list);
-			getClassification(ConstantKey.fine_industry, list);
-			getClassification(ConstantKey.detail_industry, list);
+		getCompanyList(ConstantKey.otc_list, list);
+		getCompanyList(ConstantKey.tse_list, list);
+		
+		getClassification(ConstantKey.daniel_fine, list);
+		getClassification(ConstantKey.daniel_rough, list);
+		getClassification(ConstantKey.otc_rough, list);
+		getClassification(ConstantKey.tse_rough, list);
+		getClassification(ConstantKey.fine_industry, list);
+		getClassification(ConstantKey.detail_industry, list);
 
-			ret = getUpdateResult(list);
+		ret = getUpdateResult(list);
 
-			basicInfoRepository.deleteAll();
-			basicInfoRepository.saveAll(list.values());
-
-			exportToCsvImpl.exportStockList();
-
-		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
-		}
+		basicInfoRepository.deleteAll();
+		basicInfoRepository.saveAll(list.values());
 
 		return ret;
 	}
@@ -128,7 +115,7 @@ public class HandleStockList extends BaseService {
 				}
 			}
 		} catch (IOException e) {
-			throw new Exception(Log.error(e.toString()));
+			throw new Exception(Log.error("classificationList:" + classificationList +e.toString()));
 		} finally {
 			try {
 				reader.close();
@@ -204,7 +191,7 @@ public class HandleStockList extends BaseService {
 				list.put(info.getStockId(), info);
 			}
 		} catch (IOException e) {
-			throw new Exception(Log.error(e.toString()));
+			throw new Exception(Log.error("company:" + company + e.toString()));
 		} finally {
 			try {
 				reader.close();

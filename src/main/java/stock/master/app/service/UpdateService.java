@@ -41,13 +41,10 @@ public class UpdateService extends BaseService {
 
 		updateStockListResult result = null;
 
-		try {
-			result = handleStockListImpl.updateList();
-		} catch (Exception e) {
-			throw new Exception(Log.error(e.toString()));
-		}
-
+		result = handleStockListImpl.updateList();
 		Log.debug(result.toString());
+		
+		exportToCsvImpl.exportStockList();
 		Log.debug("===== UpdateStockList done =====");
 
 		return result;
@@ -56,7 +53,7 @@ public class UpdateService extends BaseService {
 	/*
 	 * initial database
 	 * */
-	public void initDb () {
+	public void initDb () throws Exception {
 
 		Log.debug("===== initDb =====");
 
@@ -74,7 +71,7 @@ public class UpdateService extends BaseService {
 		Log.debug("===== initDb done =====");
 	}
 
-	public void initDbBySid (String sid) {
+	public void initDbBySid (String sid) throws Exception {
 
 		Log.debug("===== initDbBySid : " + sid + " =====");
 
@@ -83,16 +80,9 @@ public class UpdateService extends BaseService {
 			return;
 		}
 		
-		try {
-
-			InitDaily(sid);
-			//InitWeekly(sid);
-			//InitMonthly(sid);
-
-		} catch (Exception e) {
-			Log.error(e.toString());
-			return;
-		}
+		//InitDaily(sid);
+		InitWeekly(sid);
+		//InitMonthly(sid);
 
 		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
@@ -129,7 +119,7 @@ public class UpdateService extends BaseService {
 		try {
 
 			UpdateWeekly(sid);
-			UpdateMonthly(sid);
+			//UpdateMonthly(sid);
 						
 		} catch (Exception e) {
 			Log.error(e.toString());

@@ -24,7 +24,7 @@ public class UpdateController extends BaseController {
 	}
 
 	@GetMapping("/initdb/{sid}")
-	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) {
+	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
 
 		updateService.initDbBySid(sid);
 

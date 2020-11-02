@@ -138,23 +138,12 @@
 			"response": []
 		},
 		{
-			"name": "CralwerTesting",
+			"name": "Get Stock Info",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "downloadDatabase",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8080//stock/v1/download/getDatabase",
+					"raw": "http://127.0.0.1:1000/getinfo/crawler",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -162,65 +151,10 @@
 						"0",
 						"1"
 					],
-					"port": "8080",
+					"port": "1000",
 					"path": [
-						"",
-						"stock",
-						"v1",
-						"download",
-						"getDatabase"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "developFunction",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8080//stock/v1/develop/function",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8080",
-					"path": [
-						"",
-						"stock",
-						"v1",
-						"develop",
-						"function"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "developFunction1",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8080//stock/v1/develop/function",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8080",
-					"path": [
-						"",
-						"stock",
-						"v1",
-						"develop",
-						"function"
+						"getinfo",
+						"crawler"
 					]
 				}
 			},

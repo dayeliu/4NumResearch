@@ -24,6 +24,7 @@ import stock.master.app.util.Log;
 @Service
 public class CrawlNorwayWeb extends BaseService {
 
+	private final int retryTime = 3;
 	// url => https://norway.twsthr.info/StockHolders.aspx?stock=2337
 	private final String basic_url = "https://norway.twsthr.info/StockHolders.aspx?stock=";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyyMMdd");
@@ -41,12 +42,29 @@ public class CrawlNorwayWeb extends BaseService {
 
 		String url = basic_url + sid;
 
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+		
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
+
 		int weekCount = count/2;
 		Map<String, Weekly> data = new HashMap<String, Weekly>();
-
-		Connection connect = Jsoup.connect(url);
-		Document doc = connect.timeout(5000).get();
-
 		String[] classList = {"tr[class=lDS]", "tr[class=lLS]"};
 		for (String className : classList) {
 
@@ -84,8 +102,13 @@ public class CrawlNorwayWeb extends BaseService {
 				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
 				inputDateFormat.setTimeZone(gmtTimeZone);
 
+				Date t = null;
 				String dateStr = elements.get(2).text();
-				Date t = inputDateFormat.parse(dateStr);
+				try {
+					t = inputDateFormat.parse(dateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
 				info.setDate(t);
 				
 				data.put(dateStr, info);
