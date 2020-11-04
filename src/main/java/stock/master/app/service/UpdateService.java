@@ -79,9 +79,9 @@ public class UpdateService extends BaseService {
 			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 		
-		//InitDaily(sid);
-		InitWeekly(sid);
-		InitMonthly(sid);
+		InitDaily(sid);
+		//InitWeekly(sid);
+		//InitMonthly(sid);
 
 		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
@@ -114,8 +114,9 @@ public class UpdateService extends BaseService {
 			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 
+		UpdateDaily(sid);
 		UpdateWeekly(sid);
-		//UpdateMonthly(sid);
+		UpdateMonthly(sid);
 		
 		Log.debug("===== updateDbBySid : " + sid + " done =====");
 	}
@@ -133,7 +134,7 @@ public class UpdateService extends BaseService {
 
 		List<Daily> list = new ArrayList<Daily>();
 		
-		/*LocalDate currentDate = LocalDate.now();
+		LocalDate currentDate = LocalDate.now();
 		int year = currentDate.getYear();
 		int month = currentDate.getMonthValue();
 		for (int i = year - 1911 ; i >= year - 1911 - 1 ; i--) {
@@ -147,11 +148,8 @@ public class UpdateService extends BaseService {
 				
 				list.addAll(crawWearnyImpl.getDailylyInfo(sid, String.valueOf(i), strMonth));
 			}
-		}*/
+		}
 
-		list.addAll(crawWearnyImpl.getDailylyInfo(sid, "109", "09"));
-		//list.addAll(crawWearnyImpl.getDailylyInfo(sid, "109", "08"));
-		
 		int count = list.size();
 		String msg = "Count:" + count + " Add From " + list.get(0).getDate().toString() + " to " + list.get(count - 1).getDate().toString();
 		Log.debug(msg);
@@ -160,6 +158,35 @@ public class UpdateService extends BaseService {
 
 		exportToCsvImpl.exportDaily(sid);
 		Log.debug("InitDaily done");
+	}
+	
+	private void UpdateDaily (String sid) throws Exception {
+		if (!dailyRepository.existsByStockId(sid)) {
+			throw new Exception(Log.error("stock not init yet. sid = " + sid));
+		}
+
+		Daily fromDb = dailyRepository.findTop1ByStockIdOrderByDateDesc(sid);
+		List<Daily> newData = crawWearnyImpl.getDailylyInfo(sid, "109", "11");
+		List<Daily> readyToUpdate = new ArrayList<Daily>();
+		for (Daily info : newData) {
+			if (info.getDate().after(fromDb.getDate())) {
+				readyToUpdate.add(info);
+			}
+		}
+
+		String msg = "";
+		int count = readyToUpdate.size();
+		if (count == 0) {
+			msg = "Already up to date";
+		} else {
+			msg = "Count:" + count + " Update From " + readyToUpdate.get(0).getDate().toString() + " to " + readyToUpdate.get(count - 1).getDate().toString();
+		}
+		Log.debug(msg);
+
+		dailyRepository.saveAll(readyToUpdate);
+
+		exportToCsvImpl.exportDaily(sid);
+		Log.debug("UpdateDaily done");
 	}
 
 	/*
@@ -233,8 +260,7 @@ public class UpdateService extends BaseService {
 	
 	private void UpdateMonthly (String sid) throws Exception {
 		if (!monthlyRepository.existsByStockId(sid)) {
-			Log.error("stock not init yet. sid = " + sid);
-			return;
+			throw new Exception(Log.error("stock not init yet. sid = " + sid));
 		}
 
 		Monthly fromDb = monthlyRepository.findTop1ByStockIdOrderByDateDesc(sid);

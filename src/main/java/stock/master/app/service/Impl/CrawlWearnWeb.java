@@ -69,13 +69,7 @@ public class CrawlWearnWeb {
 				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
 				inputDateFormat.setTimeZone(gmtTimeZone);
 
-				String dateStr = elements.select("td").get(0).text();
-				String[] split = dateStr.split("/");
-				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-01";
-				Date t = inputDateFormat.parse(newDateStr);
-
 				Monthly info = new Monthly();
-				info.setDate(t);
 				info.setStockId(sid);
 				info.setIncome(elements.select("td").get(1).text().replace(",", ""));
 				info.setMom(elements.select("td").get(3).text());
@@ -84,6 +78,17 @@ public class CrawlWearnWeb {
 				info.setAccurate(elements.select("td").get(6).text().replace(",", ""));
 				info.setAccurateLastYear(elements.select("td").get(7).text().replace(",", ""));
 				info.setAcccurate_yoy(elements.select("td").get(8).text());
+
+				Date t = null;
+				String dateStr = elements.select("td").get(0).text();
+				String[] split = dateStr.split("/");
+				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-01";
+				try {
+					t = inputDateFormat.parse(newDateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
+				info.setDate(t);
 
 				data.put(newDateStr, info);
 			}
@@ -129,8 +134,26 @@ public class CrawlWearnWeb {
 		String url = basic_url + "cdata.asp?Year=" + year + "&month=" + month + "&kind=" + sid;
 		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
 		
-		Connection connect = Jsoup.connect(url);
-		Document doc = connect.timeout(5000).get();
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+		
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
 
 		for (String className : classList) {
 
@@ -143,11 +166,16 @@ public class CrawlWearnWeb {
 				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
 				inputDateFormat.setTimeZone(gmtTimeZone);
 
+				Date t = null;
 				String dateStr = elements.select("td").get(0).text();
 				String[] split = dateStr.split("/");
 				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-" + split[2];
-				Date t = inputDateFormat.parse(newDateStr);
-
+				try {
+					t = inputDateFormat.parse(newDateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
+				
 				Daily info = null;
 				if (data.containsKey(newDateStr)) {
 					info = data.get(newDateStr);
@@ -180,8 +208,26 @@ public class CrawlWearnWeb {
 		String url = basic_url + "netbuy.asp?Year=" + year + "&month=" + month + "&kind=" + sid;
 		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
 		
-		Connection connect = Jsoup.connect(url);
-		Document doc = connect.timeout(5000).get();
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+		
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
 
 		for (String className : classList) {
 
@@ -194,11 +240,16 @@ public class CrawlWearnWeb {
 				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
 				inputDateFormat.setTimeZone(gmtTimeZone);
 
+				Date t = null;
 				String dateStr = elements.select("td").get(0).text();
 				String[] split = dateStr.split("/");
 				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-" + split[2];
-				Date t = inputDateFormat.parse(newDateStr);
-
+				try {
+					t = inputDateFormat.parse(newDateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
+				
 				Daily info = null;
 				if (data.containsKey(newDateStr)) {
 					info = data.get(newDateStr);
@@ -229,8 +280,26 @@ public class CrawlWearnWeb {
 		String url = basic_url + "acredit.asp?Year=" + year + "&month=" + month + "&kind=" + sid;
 		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
 		
-		Connection connect = Jsoup.connect(url);
-		Document doc = connect.timeout(5000).get();
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+		
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
 
 		for (String className : classList) {
 
@@ -243,10 +312,15 @@ public class CrawlWearnWeb {
 				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
 				inputDateFormat.setTimeZone(gmtTimeZone);
 
+				Date t = null;
 				String dateStr = elements.select("td").get(0).text();
 				String[] split = dateStr.split("/");
 				String newDateStr = (Integer.parseInt(split[0]) + 1911) + "-" + split[1] + "-" + split[2];
-				Date t = inputDateFormat.parse(newDateStr);
+				try {
+					t = inputDateFormat.parse(newDateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
 
 				Daily info = null;
 				if (data.containsKey(newDateStr)) {
