@@ -113,7 +113,7 @@ public class CrawlWearnWeb {
 		GetAcredit(sid, year, month, data);
 		
 		List<Daily> result = MapSortByKeyDaily(data);
-		CalculateAverage(result);
+
 		// debug
 		/*for (Daily tmp : result) {
 			Log.debug(tmp.toString());
@@ -339,7 +339,7 @@ public class CrawlWearnWeb {
 		}
 	}
 
-	private void CalculateAverage(List<Daily> list) {
+	public void CalculateAverage(List<Daily> list) {
 		int count = list.size();
 		
 		List<Float> ma_5 = new ArrayList<Float>();

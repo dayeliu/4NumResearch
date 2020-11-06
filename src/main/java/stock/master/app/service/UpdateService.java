@@ -134,10 +134,11 @@ public class UpdateService extends BaseService {
 
 		List<Daily> list = new ArrayList<Daily>();
 		
+		int yearsAgo = 1;	// inital from one year ago
 		LocalDate currentDate = LocalDate.now();
 		int year = currentDate.getYear();
 		int month = currentDate.getMonthValue();
-		for (int i = year - 1911 ; i >= year - 1911 - 1 ; i--) {
+		for (int i = year - 1911 ; i >= year - 1911 - yearsAgo ; i--) {
 			for (int j = month - 1 ; j >= 1 ; j--) {
 				String strMonth = "";
 				if (j >= 10) {
@@ -149,12 +150,15 @@ public class UpdateService extends BaseService {
 				list.addAll(crawWearnyImpl.getDailylyInfo(sid, String.valueOf(i), strMonth));
 			}
 		}
+		crawWearnyImpl.CalculateAverage(list);
 
 		int count = list.size();
 		String msg = "Count:" + count + " Add From " + list.get(0).getDate().toString() + " to " + list.get(count - 1).getDate().toString();
 		Log.debug(msg);
 		
 		dailyRepository.saveAll(list);
+
+		UpdateDaily(sid);
 
 		exportToCsvImpl.exportDaily(sid);
 		Log.debug("InitDaily done");
@@ -166,7 +170,16 @@ public class UpdateService extends BaseService {
 		}
 
 		Daily fromDb = dailyRepository.findTop1ByStockIdOrderByDateDesc(sid);
-		List<Daily> newData = crawWearnyImpl.getDailylyInfo(sid, "109", "11");
+		LocalDate currentDate = LocalDate.now();
+		int year = currentDate.getYear();
+		int month = currentDate.getMonthValue();
+		String strMonth = "";
+		if (month >= 10) {
+			strMonth = String.valueOf(month);
+		} else {
+			strMonth = "0" + String.valueOf(month);
+		}
+		List<Daily> newData = crawWearnyImpl.getDailylyInfo(sid, String.valueOf(year - 1911), strMonth);
 		List<Daily> readyToUpdate = new ArrayList<Daily>();
 		for (Daily info : newData) {
 			if (info.getDate().after(fromDb.getDate())) {
@@ -184,6 +197,11 @@ public class UpdateService extends BaseService {
 		Log.debug(msg);
 
 		dailyRepository.saveAll(readyToUpdate);
+
+		// calculate average
+		List<Daily> fromDb2 = dailyRepository.findTop60ByStockIdOrderByDateDesc(sid);
+		crawWearnyImpl.CalculateAverage(fromDb2);
+		dailyRepository.saveAll(fromDb2);
 
 		exportToCsvImpl.exportDaily(sid);
 		Log.debug("UpdateDaily done");

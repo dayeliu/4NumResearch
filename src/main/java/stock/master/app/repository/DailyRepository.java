@@ -18,4 +18,5 @@ public interface DailyRepository extends JpaRepository<Daily, Long>, JpaSpecific
 	
 	List<Daily> findByStockIdOrderByDateDesc(String stockId);
 	Daily findTop1ByStockIdOrderByDateDesc(String stockId);
+	List<Daily> findTop60ByStockIdOrderByDateDesc(String stockId);
 }
