@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import stock.master.app.entity.BasicInfo;
@@ -71,6 +72,7 @@ public class UpdateService extends BaseService {
 		Log.debug("===== initDb done =====");
 	}
 
+	@Async
 	public void initDbBySid (String sid) throws Exception {
 
 		Log.debug("===== initDbBySid : " + sid + " =====");
@@ -80,8 +82,8 @@ public class UpdateService extends BaseService {
 		}
 		
 		InitDaily(sid);
-		//InitWeekly(sid);
-		//InitMonthly(sid);
+		InitWeekly(sid);
+		InitMonthly(sid);
 
 		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
@@ -89,8 +91,8 @@ public class UpdateService extends BaseService {
 	/*
 	 * update database
 	 * */
-	public void updateDb () throws Exception {
-		Log.debug("===== updateDb =====");
+	public void updateDbDaily () throws Exception {
+		Log.debug("===== updateDbDaily =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
 
@@ -98,26 +100,54 @@ public class UpdateService extends BaseService {
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			updateDbBySid(stock.getStockId());
+			updateDbBySid(stock.getStockId(), 1);
 
 			idx++;
 		}
 
-		Log.debug("===== updateDb done =====");
+		Log.debug("===== updateDbDaily done =====");
 	}
 
-	public void updateDbBySid (String sid) throws Exception {
+	public void updateDbWeekly () throws Exception {
+		Log.debug("===== updateDbWeekly =====");
 
-		Log.debug("===== updateDbBySid : " + sid + " =====");
+		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			updateDbBySid(stock.getStockId(), 2);
+
+			idx++;
+		}
+
+		Log.debug("===== updateDbWeekly done =====");
+	}
+
+	/*
+	 * state : 
+	 * 	1 : daily
+	 * 	2 : weekly
+	 * 	3 : ally
+	 * */
+	public void updateDbBySid (String sid, int state) throws Exception {
+
+		Log.debug("===== updateDbBySid : " + sid + "state = " + state + " =====");
 
 		if (!basicInfoRepository.existsById(sid)) {
 			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 
-		UpdateDaily(sid);
-		UpdateWeekly(sid);
-		UpdateMonthly(sid);
+		if (state == 1 || state == 3) {
+			UpdateDaily(sid);
+		}
 		
+		if (state == 2 || state == 3) {
+			UpdateWeekly(sid);
+			UpdateMonthly(sid);
+		}
+
 		Log.debug("===== updateDbBySid : " + sid + " done =====");
 	}
 

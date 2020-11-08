@@ -42,17 +42,24 @@ public class UpdateController extends BaseController {
 	@GetMapping("/updateDb/{sid}")
 	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
 
-		updateService.updateDbBySid(sid);
+		updateService.updateDbBySid(sid, 3);
 
 		return new ResponseEntity<String>("UpdateDbBySid:" + sid, HttpStatus.OK);
 	}
 	
-	@GetMapping("/updateDb")
-	public ResponseEntity<String> UpdateDb() throws Exception {
+	@GetMapping("/updateDb/Daily")
+	public ResponseEntity<String> UpdateDbDaily() throws Exception {
 
-		updateService.updateDb();
+		updateService.updateDbDaily();
 
-		return new ResponseEntity<String>("UpdateDb", HttpStatus.OK);
+		return new ResponseEntity<String>("UpdateDbDaily", HttpStatus.OK);
 	}
 
+	@GetMapping("/updateDb/Weekly")
+	public ResponseEntity<String> UpdateDbWeekly() throws Exception {
+
+		updateService.updateDbWeekly();
+
+		return new ResponseEntity<String>("UpdateDbWeekly", HttpStatus.OK);
+	}
 }
