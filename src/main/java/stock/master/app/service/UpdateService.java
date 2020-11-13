@@ -2,9 +2,7 @@ package stock.master.app.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Daily;
 import stock.master.app.entity.Monthly;
+import stock.master.app.entity.Quarterly;
 import stock.master.app.entity.Weekly;
 import stock.master.app.resource.vo.updateStockListResult;
 import stock.master.app.service.Impl.CrawlNorwayWeb;
@@ -84,6 +83,7 @@ public class UpdateService extends BaseService {
 		InitDaily(sid);
 		InitWeekly(sid);
 		InitMonthly(sid);
+		InitQuarterly(sid);
 
 		Log.debug("===== initDbBySid : " + sid + "  done =====");
 	}
@@ -91,7 +91,7 @@ public class UpdateService extends BaseService {
 	/*
 	 * update database
 	 * */
-	public void updateDbDaily () throws Exception {
+	public void updateDb (int state) throws Exception {
 		Log.debug("===== updateDbDaily =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
@@ -100,7 +100,7 @@ public class UpdateService extends BaseService {
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			updateDbBySid(stock.getStockId(), 1);
+			updateDbBySid(stock.getStockId(), state);
 
 			idx++;
 		}
@@ -108,28 +108,13 @@ public class UpdateService extends BaseService {
 		Log.debug("===== updateDbDaily done =====");
 	}
 
-	public void updateDbWeekly () throws Exception {
-		Log.debug("===== updateDbWeekly =====");
-
-		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
-
-		int idx = 0;
-		for (BasicInfo stock : stockIds) {
-			Log.debug("[Index : " + idx + "] " + stock.getStockId());
-
-			updateDbBySid(stock.getStockId(), 2);
-
-			idx++;
-		}
-
-		Log.debug("===== updateDbWeekly done =====");
-	}
-
 	/*
 	 * state : 
 	 * 	1 : daily
 	 * 	2 : weekly
-	 * 	3 : ally
+	 * 	4 : monthly
+	 *  8 : quarterly
+	 *  15 : all
 	 * */
 	public void updateDbBySid (String sid, int state) throws Exception {
 
@@ -139,13 +124,20 @@ public class UpdateService extends BaseService {
 			throw new Exception(Log.error("stock id not exist. id = " + sid));
 		}
 
-		if (state == 1 || state == 3) {
+		if ((state & 1) != 0) {
 			UpdateDaily(sid);
 		}
-		
-		if (state == 2 || state == 3) {
+
+		if ((state & 2) != 0) {
 			UpdateWeekly(sid);
+		}
+
+		if ((state & 4) != 0) {
 			UpdateMonthly(sid);
+		}
+
+		if ((state & 8) != 0) {
+			UpdateQuarterly(sid);
 		}
 
 		Log.debug("===== updateDbBySid : " + sid + " done =====");
@@ -333,5 +325,53 @@ public class UpdateService extends BaseService {
 
 		exportToCsvImpl.exportMonthly(sid);
 		Log.debug("UpdateMonthly done");
+	}
+
+	/*
+	 * handle quarterly data
+	 * */
+	private void InitQuarterly (String sid) throws Exception {
+		if (quarterlyRepository.existsByStockId(sid)) {
+			quarterlyRepository.deleteByStockId(sid);
+		}
+
+		List<Quarterly> list = crawWearnyImpl.getQuarterlyInfo(sid);
+		int count = list.size();
+		String msg = "Count:" + count + " Add From " + list.get(0).getDate().toString() + " to " + list.get(count - 1).getDate().toString();
+		Log.debug(msg);
+
+		quarterlyRepository.saveAll(list);
+
+		exportToCsvImpl.exportQuarterly(sid);
+		Log.debug("InitQuarterly done");
+	}
+
+	private void UpdateQuarterly (String sid) throws Exception {
+		if (!quarterlyRepository.existsByStockId(sid)) {
+			throw new Exception(Log.error("stock not init yet. sid = " + sid));
+		}
+
+		Quarterly fromDb = quarterlyRepository.findTop1ByStockIdOrderByDateDesc(sid);
+		List<Quarterly> newData = crawWearnyImpl.getQuarterlyInfo(sid);
+		List<Quarterly> readyToUpdate = new ArrayList<Quarterly>();
+		for (Quarterly info : newData) {
+			if (info.getDate().after(fromDb.getDate())) {
+				readyToUpdate.add(info);
+			}
+		}
+
+		String msg = "";
+		int count = readyToUpdate.size();
+		if (count == 0) {
+			msg = "Already up to date";
+		} else {
+			msg = "Count:" + count + " Update From " + readyToUpdate.get(0).getDate().toString() + " to " + readyToUpdate.get(count - 1).getDate().toString();
+		}
+		Log.debug(msg);
+
+		quarterlyRepository.saveAll(readyToUpdate);
+
+		exportToCsvImpl.exportQuarterly(sid);
+		Log.debug("UpdateQuarterly done");
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import stock.master.app.entity.Daily;
 import stock.master.app.entity.Monthly;
+import stock.master.app.entity.Quarterly;
 import stock.master.app.util.Log;
 
 @Service
@@ -26,6 +27,75 @@ public class CrawlWearnWeb {
 	private final int retryTime = 3;
 	private final String basic_url = "https://stock.wearn.com/";
 	private SimpleDateFormat inputDateFormat = new SimpleDateFormat ("yyyy-MM-dd");
+
+	/*
+	 * 三率 & eps
+	 * 
+	 * */
+	public List<Quarterly> getQuarterlyInfo (String sid) throws Exception {
+		String url = basic_url + "income.asp?kind=" + sid;
+
+		Connection connect = null;
+		Document doc = null;
+
+		boolean connectSuccessful = false;
+		int retry = 0;
+		while (retry < retryTime) {
+			try {
+				connect = Jsoup.connect(url);
+				doc = connect.timeout(5000).get();
+				connectSuccessful = true;
+				break;
+			} catch (Exception e) {
+				Log.error("[sid : " + sid + "] error : " + e.toString());
+			}
+			retry++;
+		}
+
+		if (connectSuccessful == false) {
+			throw new Exception ("[sid : " + sid + "] connection failed.");
+		}
+
+		Map<String, Quarterly> data = new HashMap<String, Quarterly>();
+		String[] classList = {"tr[class=stockalllistbg1]", "tr[class=stockalllistbg2]"};
+		for (String className : classList) {
+
+			Elements mainElements = doc.select(className);
+			int count = mainElements.size();
+			for (int i = 0 ; i < count ; i++) {
+				Elements elements = mainElements.get(i).select("td");
+
+				// date
+				TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+				inputDateFormat.setTimeZone(gmtTimeZone);
+
+				Quarterly info = new Quarterly();
+				info.setStockId(sid);
+				info.setGm(elements.select("td").get(2).text());
+				info.setOpr(elements.select("td").get(3).text());
+				info.setNpat(elements.select("td").get(5).text());
+				info.setEps(elements.select("td").get(6).text());
+
+				Date t = null;
+				String dateStr = elements.select("td").get(0).select("a").text();
+
+				int index = dateStr.indexOf("年");
+				String newDateStr = (Integer.parseInt(dateStr.substring(0, index)) + 1911) + "-" + dateStr.substring(index + 1, index + 3) + "-01";
+				try {
+					t = inputDateFormat.parse(newDateStr);
+				} catch (Exception e) {
+					throw new Exception (Log.error("[sid : " + sid + "] dateStr : " + dateStr + ", error : " + e.toString()));
+				}
+				info.setDate(t);
+
+				data.put(dateStr, info);
+			}
+		}
+
+		List<Quarterly> result = MapSortByKeyQuarterly(data);
+
+		return result;
+	}
 
 	/*
 	 * 營收
@@ -386,7 +456,7 @@ public class CrawlWearnWeb {
 	}
 
 	private List<Monthly> MapSortByKey(Map<String, Monthly> list) {
-		
+
         List<Monthly> result = new ArrayList<Monthly>();
 
         Set set= list.keySet();
@@ -396,10 +466,10 @@ public class CrawlWearnWeb {
         for(Object key : arr){
             result.add(0, list.get(key));
         }
-        
+
         return result;
 	}
-	
+
 	private List<Daily> MapSortByKeyDaily(Map<String, Daily> list) {
 		
         List<Daily> result = new ArrayList<Daily>();
@@ -411,7 +481,22 @@ public class CrawlWearnWeb {
         for(Object key : arr){
             result.add(0, list.get(key));
         }
-        
+
+        return result;
+	}
+
+private List<Quarterly> MapSortByKeyQuarterly(Map<String, Quarterly> list) {
+
+        List<Quarterly> result = new ArrayList<Quarterly>();
+
+        Set set= list.keySet();
+        Object[] arr = set.toArray();
+        Arrays.sort(arr);
+
+        for(Object key : arr){
+            result.add(0, list.get(key));
+        }
+
         return result;
 	}
 }

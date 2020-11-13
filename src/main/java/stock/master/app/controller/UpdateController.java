@@ -39,27 +39,21 @@ public class UpdateController extends BaseController {
 		return new ResponseEntity<String>("InitDb", HttpStatus.OK);
 	}
 
-	@GetMapping("/updateDb/{sid}")
-	public ResponseEntity<String> UpdateDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
+	@GetMapping("/updateDb/{sid}/{state}")
+	public ResponseEntity<String> UpdateDbBySid(
+			@PathVariable(value = "sid") String sid,
+			@PathVariable(value = "state") Integer state) throws Exception {
 
-		updateService.updateDbBySid(sid, 3);
+		updateService.updateDbBySid(sid, state);
 
-		return new ResponseEntity<String>("UpdateDbBySid:" + sid, HttpStatus.OK);
+		return new ResponseEntity<String>("UpdateDb Sid = " + sid + " state = " + state, HttpStatus.OK);
 	}
 	
-	@GetMapping("/updateDb/Daily")
-	public ResponseEntity<String> UpdateDbDaily() throws Exception {
+	@GetMapping("/updateDb/{state}")
+	public ResponseEntity<String> UpdateDbDaily(@PathVariable(value = "state") Integer state) throws Exception {
 
-		updateService.updateDbDaily();
+		updateService.updateDb(state);
 
-		return new ResponseEntity<String>("UpdateDbDaily", HttpStatus.OK);
-	}
-
-	@GetMapping("/updateDb/Weekly")
-	public ResponseEntity<String> UpdateDbWeekly() throws Exception {
-
-		updateService.updateDbWeekly();
-
-		return new ResponseEntity<String>("UpdateDbWeekly", HttpStatus.OK);
+		return new ResponseEntity<String>("updateDb state = " + state, HttpStatus.OK);
 	}
 }

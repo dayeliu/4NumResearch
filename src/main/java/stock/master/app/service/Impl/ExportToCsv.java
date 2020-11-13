@@ -13,6 +13,7 @@ import stock.master.app.constant.ConstantKey;
 import stock.master.app.entity.BasicInfo;
 import stock.master.app.entity.Daily;
 import stock.master.app.entity.Monthly;
+import stock.master.app.entity.Quarterly;
 import stock.master.app.entity.Weekly;
 import stock.master.app.service.BaseService;
 import stock.master.app.util.Log;
@@ -25,15 +26,15 @@ public class ExportToCsv extends BaseService {
 	java.text.DecimalFormat df = new java.text.DecimalFormat("#.##");
 
 	public boolean exportDaily(String sid) throws Exception {
-		
+
 		final String fileName = sid + "_" + "daily.csv";
 		final String filePath = ConstantKey.export_dir + sid + "//" + fileName;
-		
+
 		if (fileOperation.checkExist(filePath)) {
 			fileOperation.delFile(filePath);
 		}
 		fileOperation.copyFile(ConstantKey.export_template_dir + "daily.csv", filePath);
-		
+
 		File file = new File(filePath);
 		FileWriter fr = new FileWriter(file, true);
 		BufferedWriter br = new BufferedWriter(fr);
@@ -51,7 +52,7 @@ public class ExportToCsv extends BaseService {
 
 		br.close();
 		fr.close();
-		
+
 		return true;
 	}
 
@@ -112,6 +113,34 @@ public class ExportToCsv extends BaseService {
 		return true;
 	}
 
+public boolean exportQuarterly(String sid) throws Exception {
+		
+		final String fileName = sid + "_" + "quarterly.csv";
+		final String filePath = ConstantKey.export_dir + sid + "//" + fileName;
+		
+		if (fileOperation.checkExist(filePath)) {
+			fileOperation.delFile(filePath);
+		}
+		fileOperation.copyFile(ConstantKey.export_template_dir + "quarterly.csv", filePath);
+		
+		File file = new File(filePath);
+		FileWriter fr = new FileWriter(file, true);
+		BufferedWriter br = new BufferedWriter(fr);
+
+		List<Quarterly> list = quarterlyRepository.findByStockIdOrderByDateDesc(sid);
+		for (Quarterly info : list) {
+			String strDate = formatter.format(info.getDate());
+			String str = strDate + "," + info.getGm() + "," + info.getOpr() + "," + info.getNpat() + "," + info.getEps() + ",";
+			br.write(str + "\n");
+			br.flush();
+		}
+
+		br.close();
+		fr.close();
+
+		return true;
+	}
+	
 	public boolean exportStockList() throws Exception {
 		
 		File file = new File(ConstantKey.stock_list);
