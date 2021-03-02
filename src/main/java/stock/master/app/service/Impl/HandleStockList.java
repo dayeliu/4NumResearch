@@ -45,6 +45,7 @@ public class HandleStockList extends BaseService {
 		getClassification(ConstantKey.tse_rough, list);
 		getClassification(ConstantKey.fine_industry, list);
 		getClassification(ConstantKey.detail_industry, list);
+		getNotes(list);
 
 		ret = getUpdateResult(list);
 
@@ -52,6 +53,48 @@ public class HandleStockList extends BaseService {
 		basicInfoRepository.saveAll(list.values());
 
 		return ret;
+	}
+
+	private boolean getNotes(Map<String, BasicInfo> list) throws Exception {
+		BufferedReader reader = null;
+
+		try {
+			reader = new BufferedReader(new FileReader(ConstantKey.notes));
+			String line = "";
+			while((line = reader.readLine()) != null) {
+				line = line.replace("\n", "");
+				line = line.replace("\r", "");
+				line = line.replace("\t", "");
+				line = line.replace(" ", "");
+
+				if (line.isEmpty()) {
+					continue;
+				}
+
+				String[] splitStr = line.split(":");
+				String sid = splitStr[0];
+				String note = splitStr[1];
+
+				if (!list.containsKey(sid)) {
+					Log.error("stock not exist in db " + sid);
+					continue;
+				}
+
+				BasicInfo info = list.get(sid);
+				info.setNotes(note);
+				list.put(sid, info);
+			}
+		} catch (IOException e) {
+			throw new Exception(Log.error("getNotes : " + e.toString()));
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				Log.error(e.toString());
+			}
+		}
+
+		return true;
 	}
 
 	private updateStockListResult getUpdateResult(Map<String, BasicInfo> list) {

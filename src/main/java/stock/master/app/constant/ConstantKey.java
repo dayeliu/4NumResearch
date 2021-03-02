@@ -18,6 +18,7 @@ public class ConstantKey {
 	public static final String tse_rough = industry_dir + "TSE_ROUGH_INDUSTRY.txt";
 	public static final String fine_industry = industry_dir + "FINE_INDUSTRY.txt";
 	public static final String detail_industry = industry_dir + "DETAIL_INDUSTRY.txt";
+	public static final String notes = industry_dir + "Note.txt";
 	public static final String stock_list = conf_dir + "StockList.csv";
 
 	// common
