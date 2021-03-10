@@ -30,9 +30,6 @@ public class BasicInfo implements Serializable {
 	@Column(name = "last_modified", nullable = false)
 	private Date lastModified;
 	
-	@Column(name = "initial", nullable = false)
-	private boolean initial;
-
 	@Column(name = "notes", nullable = true)
 	private String notes;
 
@@ -43,12 +40,11 @@ public class BasicInfo implements Serializable {
 		this.category = "";
 		this.amount = 0L;
 		this.lastModified = new Date();
-		this.initial = false;
 		this.notes = "";
 	}
 
 	public BasicInfo(String stockId, String name, String stockClass, String category, Long amount, Date lastModified,
-			boolean initial, String notes) {
+			String notes) {
 		super();
 		this.stockId = stockId;
 		this.name = name;
@@ -56,7 +52,6 @@ public class BasicInfo implements Serializable {
 		this.category = category;
 		this.amount = amount;
 		this.lastModified = lastModified;
-		this.initial = initial;
 		this.notes = notes;
 	}
 	
@@ -106,14 +101,6 @@ public class BasicInfo implements Serializable {
 
 	public void setLastModified(Date lastModified) {
 		this.lastModified = lastModified;
-	}
-
-	public boolean isInitial() {
-		return initial;
-	}
-
-	public void setInitial(boolean initial) {
-		this.initial = initial;
 	}
 
 	public String getNotes() {

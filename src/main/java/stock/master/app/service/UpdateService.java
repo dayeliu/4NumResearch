@@ -50,97 +50,27 @@ public class UpdateService extends BaseService {
 		return result;
 	}
 
-	/*
-	 * initial database
-	 * */
-	public void initDb () throws Exception {
-
-		Log.debug("===== initDb =====");
-
-		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
-
-		int idx = 0;
-		for (BasicInfo stock : stockIds) {
-			Log.debug("[Index : " + idx + "] " + stock.getStockId());
-
-			initDbBySid(stock.getStockId());
-
-			idx++;
-		}
-
-		Log.debug("===== initDb done =====");
-	}
-
 	@Async
-	public void initDbBySid (String sid) throws Exception {
+	public void HandlyDaily () throws Exception {
+		Log.debug("===== HandlyDaily =====");
 
-		Log.debug("===== initDbBySid : " + sid + " =====");
-
-		if (!basicInfoRepository.existsById(sid)) {
-			throw new Exception(Log.error("stock id not exist. id = " + sid));
-		}
-		
-		InitDaily(sid);
-		InitWeekly(sid);
-		InitMonthly(sid);
-		InitQuarterly(sid);
-
-		Log.debug("===== initDbBySid : " + sid + "  done =====");
-	}
-
-	/*
-	 * update database
-	 * */
-	public void updateDb (int state) throws Exception {
-		Log.debug("===== updateDbDaily =====");
-
-		List<BasicInfo> stockIds = basicInfoRepository.findTop10ByOrderByStockIdAsc();
+		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
 
 		int idx = 0;
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			updateDbBySid(stock.getStockId(), state);
+			if (dailyRepository.existsByStockId(stock.getStockId())) {
+				UpdateDaily(stock.getStockId());
+			} else {
+				Log.debug("Need to initial daily db. sid = " + stock.getStockId());
+				InitDaily(stock.getStockId());
+			}
 
 			idx++;
 		}
 
-		Log.debug("===== updateDbDaily done =====");
-	}
-
-	/*
-	 * state : 
-	 * 	1 : daily
-	 * 	2 : weekly
-	 * 	4 : monthly
-	 *  8 : quarterly
-	 *  15 : all
-	 * */
-	public void updateDbBySid (String sid, int state) throws Exception {
-
-		Log.debug("===== updateDbBySid : " + sid + "state = " + state + " =====");
-
-		if (!basicInfoRepository.existsById(sid)) {
-			throw new Exception(Log.error("stock id not exist. id = " + sid));
-		}
-
-		if ((state & 1) != 0) {
-			UpdateDaily(sid);
-		}
-
-		if ((state & 2) != 0) {
-			UpdateWeekly(sid);
-		}
-
-		if ((state & 4) != 0) {
-			UpdateMonthly(sid);
-		}
-
-		if ((state & 8) != 0) {
-			UpdateQuarterly(sid);
-		}
-
-		Log.debug("===== updateDbBySid : " + sid + " done =====");
+		Log.debug("===== HandlyDaily done =====");
 	}
 
 	/*
@@ -160,7 +90,13 @@ public class UpdateService extends BaseService {
 		LocalDate currentDate = LocalDate.now();
 		int year = currentDate.getYear();
 		int month = currentDate.getMonthValue();
+
 		for (int i = year - 1911 ; i >= year - 1911 - yearsAgo ; i--) {
+			// last year
+			if (i != year - 1911) {
+				month = 13;
+			}
+
 			for (int j = month - 1 ; j >= 1 ; j--) {
 				String strMonth = "";
 				if (j >= 10) {
@@ -229,6 +165,28 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateDaily done");
 	}
 
+	@Async
+	public void HandlyWeekly() throws Exception {
+		Log.debug("===== HandlyWeekly =====");
+
+		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			if (weeklyRepository.existsByStockId(stock.getStockId())) {
+				UpdateWeekly(stock.getStockId());
+			} else {
+				Log.debug("Need to initial weekly db. sid = " + stock.getStockId());
+				InitWeekly(stock.getStockId());
+			}
+
+			idx++;
+		}
+
+		Log.debug("===== HandlyWeekly done =====");
+	}
 	/*
 	 * handle weekly data
 	 * 

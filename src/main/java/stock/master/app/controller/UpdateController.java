@@ -1,5 +1,10 @@
 package stock.master.app.controller;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,37 +28,30 @@ public class UpdateController extends BaseController {
 		return new ResponseEntity<updateStockListResult>(result, HttpStatus.OK);
 	}
 
-	@GetMapping("/initdb/{sid}")
-	public ResponseEntity<String> InitialDbBySid(@PathVariable(value = "sid") String sid) throws Exception {
+	@GetMapping("/updateDb")
+	public ResponseEntity<String> UpdateDb() throws Exception {
 
-		updateService.initDbBySid(sid);
+		LocalDate date = LocalDate.now();
+		DayOfWeek dow = date.getDayOfWeek();
+		String dayName = dow.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+		System.out.println(dayName);
 
-		return new ResponseEntity<String>("InitialDbBySid:" + sid, HttpStatus.OK);
-	}
-	
-	@GetMapping("/InitDb")
-	public ResponseEntity<String> InitialDb() throws Exception {
+		// update daily info everyday
+		updateService.HandlyDaily();
 
-		updateService.initDb();
+		// update weekly info every weekend
+		if (dayName.equals("Saturday") || dayName.equals("Sunday")) {
+			System.out.println("update weekly info");
+		}
+		updateService.HandlyWeekly();
 
-		return new ResponseEntity<String>("InitDb", HttpStatus.OK);
-	}
+		// update monthly info when ...
 
-	@GetMapping("/updateDb/{sid}/{state}")
-	public ResponseEntity<String> UpdateDbBySid(
-			@PathVariable(value = "sid") String sid,
-			@PathVariable(value = "state") Integer state) throws Exception {
+		// update quarterly info when ...
 
-		updateService.updateDbBySid(sid, state);
 
-		return new ResponseEntity<String>("UpdateDb Sid = " + sid + " state = " + state, HttpStatus.OK);
-	}
-	
-	@GetMapping("/updateDb/{state}")
-	public ResponseEntity<String> UpdateDbDaily(@PathVariable(value = "state") Integer state) throws Exception {
+		//updateService.updateDb(state);
 
-		updateService.updateDb(state);
-
-		return new ResponseEntity<String>("updateDb state = " + state, HttpStatus.OK);
+		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
 }

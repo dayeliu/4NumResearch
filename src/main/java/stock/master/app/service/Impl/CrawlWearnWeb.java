@@ -422,18 +422,22 @@ public class CrawlWearnWeb {
 			Float accurate = 0f;
 			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_5, 5);
 			if (daily.getMa_5() == 0) {
+				accurate = (float)Math.round(accurate*100)/100;
 				daily.setMa_5(accurate);
 			}
 			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_10, 10);
 			if (daily.getMa_10() == 0) {
+				accurate = (float)Math.round(accurate*100)/100;
 				daily.setMa_10(accurate);
 			}
 			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_20, 20);
 			if (daily.getMa_20() == 0) {
+				accurate = (float)Math.round(accurate*100)/100;
 				daily.setMa_20(accurate);
 			}
 			accurate = CalculateAverageImpl(list.get(i).getClose(), ma_60, 60);
 			if (daily.getMa_60() == 0) {
+				accurate = (float)Math.round(accurate*100)/100;
 				daily.setMa_60(accurate);
 			}
 			

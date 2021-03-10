@@ -15,4 +15,5 @@ public interface BasicInfoRepository extends JpaRepository<BasicInfo, String>, J
 
 	List<BasicInfo> findAllByOrderByStockIdAsc();
 	List<BasicInfo> findTop10ByOrderByStockIdAsc();
+	List<BasicInfo> findTop1ByOrderByStockIdAsc();
 }
