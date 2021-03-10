@@ -1,8 +1,11 @@
 package stock.master.app.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -51,7 +54,33 @@ public class UpdateService extends BaseService {
 	}
 
 	@Async
-	public void HandlyDaily () throws Exception {
+	public void UpdateDb () throws Exception {
+		Log.debug("===== UpdateDb =====");
+
+		LocalDate date = LocalDate.now();
+		DayOfWeek dow = date.getDayOfWeek();
+		String dayName = dow.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+		System.out.println(dayName);
+
+		// update daily info everyday
+		HandlyDaily();
+
+		// update weekly info every weekend
+		if (dayName.equals("Saturday") || dayName.equals("Sunday")) {
+			System.out.println("update weekly info");
+		}
+		HandlyWeekly();
+
+		// update monthly info when ...
+		HandlyMonthly();
+
+		// update quarterly info when ...
+		HandlyQuarterly();
+
+		Log.debug("===== UpdateDb done =====");
+	}
+
+	private void HandlyDaily () throws Exception {
 		Log.debug("===== HandlyDaily =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
@@ -165,8 +194,7 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateDaily done");
 	}
 
-	@Async
-	public void HandlyWeekly() throws Exception {
+	private void HandlyWeekly() throws Exception {
 		Log.debug("===== HandlyWeekly =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
@@ -236,6 +264,27 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateWeekly done");
 	}
 	
+	private void HandlyMonthly() throws Exception {
+		Log.debug("===== HandlyMonthly =====");
+
+		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			if (monthlyRepository.existsByStockId(stock.getStockId())) {
+				UpdateMonthly(stock.getStockId());
+			} else {
+				Log.debug("Need to initial monthly db. sid = " + stock.getStockId());
+				InitMonthly(stock.getStockId());
+			}
+
+			idx++;
+		}
+
+		Log.debug("===== HandlyMonthly done =====");
+	}
 	/*
 	 * handle monthly data
 	 * 
@@ -285,6 +334,27 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateMonthly done");
 	}
 
+	private void HandlyQuarterly() throws Exception {
+		Log.debug("===== HandlyQuarterly =====");
+
+		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
+
+		int idx = 0;
+		for (BasicInfo stock : stockIds) {
+			Log.debug("[Index : " + idx + "] " + stock.getStockId());
+
+			if (quarterlyRepository.existsByStockId(stock.getStockId())) {
+				UpdateQuarterly(stock.getStockId());
+			} else {
+				Log.debug("Need to initial quarterly db. sid = " + stock.getStockId());
+				InitQuarterly(stock.getStockId());
+			}
+
+			idx++;
+		}
+
+		Log.debug("===== HandlyQuarterly done =====");
+	}
 	/*
 	 * handle quarterly data
 	 * */

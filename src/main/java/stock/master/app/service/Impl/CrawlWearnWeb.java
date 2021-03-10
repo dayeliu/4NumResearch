@@ -34,7 +34,7 @@ public class CrawlWearnWeb {
 	 * */
 	public List<Quarterly> getQuarterlyInfo (String sid) throws Exception {
 		String url = basic_url + "income.asp?kind=" + sid;
-
+System.out.println(url);
 		Connection connect = null;
 		Document doc = null;
 

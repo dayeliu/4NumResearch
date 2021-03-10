@@ -31,26 +31,7 @@ public class UpdateController extends BaseController {
 	@GetMapping("/updateDb")
 	public ResponseEntity<String> UpdateDb() throws Exception {
 
-		LocalDate date = LocalDate.now();
-		DayOfWeek dow = date.getDayOfWeek();
-		String dayName = dow.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-		System.out.println(dayName);
-
-		// update daily info everyday
-		updateService.HandlyDaily();
-
-		// update weekly info every weekend
-		if (dayName.equals("Saturday") || dayName.equals("Sunday")) {
-			System.out.println("update weekly info");
-		}
-		updateService.HandlyWeekly();
-
-		// update monthly info when ...
-
-		// update quarterly info when ...
-
-
-		//updateService.updateDb(state);
+		updateService.UpdateDb();
 
 		return new ResponseEntity<String>("", HttpStatus.OK);
 	}
