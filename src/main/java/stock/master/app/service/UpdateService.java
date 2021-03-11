@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -53,6 +54,9 @@ public class UpdateService extends BaseService {
 		return result;
 	}
 
+	/*
+	 * update database everyday at 7:00 pm
+	 * */
 	@Async
 	public void UpdateDb () throws Exception {
 		Log.debug("===== UpdateDb =====");
@@ -63,7 +67,7 @@ public class UpdateService extends BaseService {
 		System.out.println(dayName);
 
 		// update daily info everyday
-		HandlyDaily();
+		//HandlyDaily();
 
 		// update weekly info every weekend
 		if (dayName.equals("Saturday") || dayName.equals("Sunday")) {
@@ -72,10 +76,10 @@ public class UpdateService extends BaseService {
 		HandlyWeekly();
 
 		// update monthly info when ...
-		HandlyMonthly();
+		//HandlyMonthly();
 
 		// update quarterly info when ...
-		HandlyQuarterly();
+		//HandlyQuarterly();
 
 		Log.debug("===== UpdateDb done =====");
 	}
@@ -83,17 +87,27 @@ public class UpdateService extends BaseService {
 	private void HandlyDaily () throws Exception {
 		Log.debug("===== HandlyDaily =====");
 
+		Date curDate = new Date();
+		if (curDate.getHours() < 19) {
+			Log.debug("Invalid update time : " + curDate.toString());
+			return;
+		}
+
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
 
 		int idx = 0;
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			if (dailyRepository.existsByStockId(stock.getStockId())) {
-				UpdateDaily(stock.getStockId());
-			} else {
+			Daily fromDb = dailyRepository.findTop1ByStockIdOrderByDateDesc(stock.getStockId());
+			if (fromDb == null) {
 				Log.debug("Need to initial daily db. sid = " + stock.getStockId());
 				InitDaily(stock.getStockId());
+			} else {
+				Date dateFromDb = fromDb.getDate();
+				if ((curDate.getYear()*1000 + curDate.getMonth()*50 + curDate.getDay()) > (dateFromDb.getYear()*1000 + dateFromDb.getMonth()*50 + dateFromDb.getDay())) {
+					UpdateDaily(stock.getStockId());
+				}
 			}
 
 			idx++;
@@ -197,17 +211,27 @@ public class UpdateService extends BaseService {
 	private void HandlyWeekly() throws Exception {
 		Log.debug("===== HandlyWeekly =====");
 
+		Date curDate = new Date();
+		if (curDate.getHours() < 19) {
+			Log.debug("Invalid update time : " + curDate.toString());
+			//return;
+		}
+
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
 
 		int idx = 0;
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			if (weeklyRepository.existsByStockId(stock.getStockId())) {
-				UpdateWeekly(stock.getStockId());
-			} else {
+			Weekly fromDb = weeklyRepository.findTop1ByStockIdOrderByDateDesc(stock.getStockId());
+			if (fromDb == null) {
 				Log.debug("Need to initial weekly db. sid = " + stock.getStockId());
 				InitWeekly(stock.getStockId());
+			} else {
+				Date dateFromDb = fromDb.getDate();
+				if (((curDate.getYear()*1000 + curDate.getMonth()*50 + curDate.getDay()) - (dateFromDb.getYear()*1000 + dateFromDb.getMonth()*50 + dateFromDb.getDay())) >= 7) {
+					UpdateWeekly(stock.getStockId());
+				}
 			}
 
 			idx++;
@@ -267,17 +291,27 @@ public class UpdateService extends BaseService {
 	private void HandlyMonthly() throws Exception {
 		Log.debug("===== HandlyMonthly =====");
 
+		Date curDate = new Date();
+		if (curDate.getHours() < 19) {
+			Log.debug("Invalid update time : " + curDate.toString());
+			//return;
+		}
+
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
 
 		int idx = 0;
 		for (BasicInfo stock : stockIds) {
 			Log.debug("[Index : " + idx + "] " + stock.getStockId());
 
-			if (monthlyRepository.existsByStockId(stock.getStockId())) {
-				UpdateMonthly(stock.getStockId());
-			} else {
+			Monthly fromDb = monthlyRepository.findTop1ByStockIdOrderByDateDesc(stock.getStockId());
+			if (fromDb == null) {
 				Log.debug("Need to initial monthly db. sid = " + stock.getStockId());
 				InitMonthly(stock.getStockId());
+			} else {
+				Date dateFromDb = fromDb.getDate();
+				if ((curDate.getYear()*1000 + (curDate.getMonth()-1)*50) > (dateFromDb.getYear()*1000 + dateFromDb.getMonth()*50)) {
+					UpdateMonthly(stock.getStockId());
+				}
 			}
 
 			idx++;
