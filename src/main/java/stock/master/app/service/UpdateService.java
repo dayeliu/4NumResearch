@@ -25,6 +25,7 @@ import stock.master.app.service.Impl.HandleStockList;
 import stock.master.app.util.Log;
 
 @Service
+@SuppressWarnings("deprecation")
 public class UpdateService extends BaseService {
 
 	@Autowired
@@ -310,7 +311,11 @@ public class UpdateService extends BaseService {
 				InitMonthly(stock.getStockId());
 			} else {
 				Date dateFromDb = fromDb.getDate();
-				if ((curDate.getYear()*1000 + (curDate.getMonth()-1)*50) > (dateFromDb.getYear()*1000 + dateFromDb.getMonth()*50)) {
+				if (curDate.getMonth() == 0) {	// January
+					if (((curDate.getYear()-1)*1000 + 12*50) > (dateFromDb.getYear()*1000 + (dateFromDb.getMonth()+1)*50)) {
+						UpdateMonthly(stock.getStockId());
+					}
+				} else if ((curDate.getYear()*1000 + (curDate.getMonth())*50) > (dateFromDb.getYear()*1000 + (dateFromDb.getMonth()+1)*50)) {
 					UpdateMonthly(stock.getStockId());
 				}
 			}
