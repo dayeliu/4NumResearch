@@ -55,6 +55,7 @@ public class UpdateService extends BaseService {
 	}
 
 	/*
+	 * to determine when to update db
 	 * update database everyday at 7:00 pm
 	 * */
 	@Async
@@ -67,16 +68,16 @@ public class UpdateService extends BaseService {
 		System.out.println(dayName);
 
 		// update daily info everyday
-		//HandlyDaily();
+		HandlyDaily();
 
 		// update weekly info every weekend
-		if (dayName.equals("Saturday") || dayName.equals("Sunday")) {
+		if (dayName.equals("Sunday")) {
 			System.out.println("update weekly info");
 		}
 		HandlyWeekly();
 
 		// update monthly info when ...
-		//HandlyMonthly();
+		HandlyMonthly();
 
 		// update quarterly info when ...
 		//HandlyQuarterly();
@@ -90,7 +91,7 @@ public class UpdateService extends BaseService {
 		Date curDate = new Date();
 		if (curDate.getHours() < 19) {
 			Log.debug("Invalid update time : " + curDate.toString());
-			return;
+			//return;
 		}
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
@@ -119,7 +120,7 @@ public class UpdateService extends BaseService {
 	/*
 	 * handle daily data
 	 * 
-	 * 從去年1/1開始
+	 * start from Jan. 1 last year
 	 * 
 	 * */
 	private void InitDaily (String sid) throws Exception {

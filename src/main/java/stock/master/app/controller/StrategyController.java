@@ -13,6 +13,24 @@ import stock.master.app.util.Log;
 @RequestMapping(ConstantKey.API_PREFIX + "/strategy")
 public class StrategyController extends BaseController {
 	
+	@GetMapping("/tosinBuy")
+	public ResponseEntity<String> strategy_tosin_buy() throws Exception {
+		Log.debug("===== strategy_tosin_buy begin =====");
+
+		Integer count = 0; 
+		try {
+			//count = stockList_service.updateList();
+		} catch (Exception e) {
+			throw new Exception (e.toString());
+		}
+
+		String msg = "Total count : " + count.toString();
+		Log.debug(msg);
+
+		Log.debug("===== strategy_tosin_buy end =====");
+		return new ResponseEntity<>(msg, HttpStatus.OK);
+	}
+
 	@GetMapping("/strategy1")
 	public ResponseEntity<String> strategy_over_12_month() throws Exception {
 		Log.debug("===== strategy_over_12_month begin =====");
