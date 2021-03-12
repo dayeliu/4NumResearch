@@ -66,16 +66,15 @@ public class UpdateService extends BaseService {
 		LocalDate date = LocalDate.now();
 		DayOfWeek dow = date.getDayOfWeek();
 		String dayName = dow.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-		System.out.println(dayName);
 
 		// update daily info everyday
-		HandlyDaily();
+		//HandlyDaily();
 
 		// update weekly info every weekend
 		if (dayName.equals("Sunday")) {
 			System.out.println("update weekly info");
 		}
-		HandlyWeekly();
+		//HandlyWeekly();
 
 		// update monthly info when ...
 		HandlyMonthly();
@@ -299,7 +298,8 @@ public class UpdateService extends BaseService {
 			//return;
 		}
 
-		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
+		//List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();
+		List<BasicInfo> stockIds = basicInfoRepository.findAll();
 
 		int idx = 0;
 		for (BasicInfo stock : stockIds) {
