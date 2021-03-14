@@ -77,7 +77,7 @@ public class UpdateService extends BaseService {
 		//HandlyWeekly();
 
 		// update monthly info when ...
-		HandlyMonthly();
+		HandleMonthly();
 
 		// update quarterly info when ...
 		//HandlyQuarterly();
@@ -85,7 +85,7 @@ public class UpdateService extends BaseService {
 		Log.debug("===== UpdateDb done =====");
 	}
 
-	private void HandlyDaily () throws Exception {
+	private void HandleDaily () throws Exception {
 		Log.debug("===== HandlyDaily =====");
 
 		Date curDate = new Date();
@@ -209,7 +209,7 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateDaily done");
 	}
 
-	private void HandlyWeekly() throws Exception {
+	private void HandleWeekly() throws Exception {
 		Log.debug("===== HandlyWeekly =====");
 
 		Date curDate = new Date();
@@ -289,7 +289,7 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateWeekly done");
 	}
 	
-	private void HandlyMonthly() throws Exception {
+	private void HandleMonthly() throws Exception {
 		Log.debug("===== HandlyMonthly =====");
 
 		Date curDate = new Date();
@@ -374,7 +374,7 @@ public class UpdateService extends BaseService {
 		Log.debug("UpdateMonthly done");
 	}
 
-	private void HandlyQuarterly() throws Exception {
+	private void HandleQuarterly() throws Exception {
 		Log.debug("===== HandlyQuarterly =====");
 
 		List<BasicInfo> stockIds = basicInfoRepository.findTop1ByOrderByStockIdAsc();

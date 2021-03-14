@@ -12,7 +12,21 @@ import stock.master.app.util.Log;
 @RestController
 @RequestMapping(ConstantKey.API_PREFIX + "/strategy")
 public class StrategyController extends BaseController {
-	
+
+	@GetMapping("/income")
+	public ResponseEntity<String> strategy_income() throws Exception {
+		Log.debug("===== strategy_income begin =====");
+
+		try {
+			strategyService.strategy_income_increase(2, false, true);
+		} catch (Exception e) {
+			throw new Exception (e.toString());
+		}
+
+		Log.debug("===== strategy_income end =====");
+		return new ResponseEntity<>("", HttpStatus.OK);
+	}
+
 	@GetMapping("/tosinBuy")
 	public ResponseEntity<String> strategy_tosin_buy() throws Exception {
 		Log.debug("===== strategy_tosin_buy begin =====");

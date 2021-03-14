@@ -8,6 +8,7 @@ public class ConstantKey {
 	public static final String industry_dir = conf_dir + "industry//";
 	public static final String export_dir = data_dir + "database//";
 	public static final String export_template_dir = data_dir + "database//template//";
+	public static final String strategy_dir = data_dir + "strategy//";
 
 	// stock list
 	public static final String otc_list = template_dir + "otc_list.csv";
@@ -20,7 +21,7 @@ public class ConstantKey {
 	public static final String detail_industry = industry_dir + "DETAIL_INDUSTRY.txt";
 	public static final String notes = industry_dir + "Note.txt";
 	public static final String stock_list = conf_dir + "StockList.csv";
-
+	
 	// common
 	public static final int retryTime = 3;
 	public static final int number2Db = 1000;
